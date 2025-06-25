@@ -1,6 +1,12 @@
 # MCP Affinity Designer Server
 # MCP Affinity Designer サーバー
 
+[![CI](https://github.com/szgk/mcp-affinity-designer/actions/workflows/ci.yml/badge.svg)](https://github.com/szgk/mcp-affinity-designer/actions/workflows/ci.yml)
+[![PR Checks](https://github.com/szgk/mcp-affinity-designer/actions/workflows/pr-checks.yml/badge.svg)](https://github.com/szgk/mcp-affinity-designer/actions/workflows/pr-checks.yml)
+[![Node.js Version](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen)](https://nodejs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0%2B-blue)](https://www.typescriptlang.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 MCP (Model Context Protocol) server for Affinity Designer integration.
 Affinity Designer統合用のMCP（Model Context Protocol）サーバーです。
 
@@ -142,6 +148,20 @@ All code must pass our quality standards:
 - **必須レビュー**: [CODE_REVIEW_CHECKLIST.md](./CODE_REVIEW_CHECKLIST.md) に従う必要があります
 - **Self-review required**: AI must review and fix code before committing
 - **セルフレビュー必須**: AIはコミット前にコードをレビューし修正する必要があります
+
+### Continuous Integration / 継続的インテグレーション
+All pull requests automatically run quality checks:
+全てのプルリクエストで品質チェックが自動実行されます：
+
+- **TypeScript Type Checking** / TypeScript型チェック
+- **ESLint Code Quality** / ESLintコード品質
+- **Build Verification** / ビルド検証
+- **Commit Message Format** / コミットメッセージ形式
+- **Security Scanning** / セキュリティスキャン
+- **Code Analysis** / コード分析
+
+PRs must pass all checks before merging.
+PRは全チェック合格後にマージ可能になります。
 
 ## License
 

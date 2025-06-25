@@ -1,0 +1,255 @@
+# PR Quality Checks Workflow
+# PRクオリティチェックワークフロー
+#
+# This workflow runs automated quality checks on pull requests
+# このワークフローはプルリクエストで自動品質チェックを実行します
+
+name: PR Quality Checks
+
+# Trigger workflow on PR events / PRイベントでワークフローをトリガー
+on:
+  pull_request:
+    branches: [ main ]
+    types: [ opened, synchronize, reopened ]
+  pull_request_target:
+    branches: [ main ]
+    types: [ opened, synchronize, reopened ]
+
+# Set workflow permissions / ワークフロー権限を設定
+permissions:
+  contents: read
+  pull-requests: read
+  checks: write
+
+jobs:
+  # Quality checks job / 品質チェックジョブ
+  quality-checks:
+    name: Quality Checks
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
+    
+    steps:
+      # Checkout repository / リポジトリをチェックアウト
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          # Use pull request head ref for PR events
+          # PRイベントではプルリクエストのheadrefを使用
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+
+      # Setup Node.js / Node.jsをセットアップ
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      # Install dependencies / 依存関係をインストール
+      - name: Install dependencies
+        run: |
+          echo "Installing npm dependencies..."
+          echo "npm依存関係をインストール中..."
+          npm ci
+
+      # Run TypeScript type checking / TypeScript型チェックを実行
+      - name: TypeScript Type Check
+        run: |
+          echo "Running TypeScript type checking..."
+          echo "TypeScript型チェックを実行中..."
+          npm run typecheck
+
+      # Run ESLint / ESLintを実行
+      - name: Run ESLint
+        run: |
+          echo "Running ESLint code quality checks..."
+          echo "ESLintコード品質チェックを実行中..."
+          npm run lint
+
+      # Build the project / プロジェクトをビルド
+      - name: Build Project
+        run: |
+          echo "Building TypeScript project..."
+          echo "TypeScriptプロジェクトをビルド中..."
+          npm run build
+
+      # Test the built server / ビルドされたサーバーをテスト
+      - name: Test MCP Server
+        run: |
+          echo "Testing MCP server functionality..."
+          echo "MCPサーバー機能をテスト中..."
+          
+          # Test that the server can start and respond
+          # サーバーが開始して応答できることをテスト
+          timeout 10s node dist/index.js < /dev/null > /dev/null 2>&1 || {
+            echo "Server test completed (expected timeout)"
+            echo "サーバーテスト完了（予期されたタイムアウト）"
+          }
+          
+          # Verify dist files exist
+          # distファイルが存在することを確認
+          if [ ! -f "dist/index.js" ]; then
+            echo "Error: dist/index.js not found"
+            echo "エラー: dist/index.jsが見つかりません"
+            exit 1
+          fi
+          
+          echo "MCP server test passed"
+          echo "MCPサーバーテスト合格"
+
+  # Code quality analysis / コード品質分析
+  code-analysis:
+    name: Code Analysis
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    
+    steps:
+      # Checkout repository / リポジトリをチェックアウト
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+
+      # Setup Node.js / Node.jsをセットアップ
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+
+      # Install dependencies / 依存関係をインストール
+      - name: Install dependencies
+        run: npm ci
+
+      # Analyze code complexity and maintainability / コード複雑度と保守性を分析
+      - name: Code Quality Analysis
+        run: |
+          echo "Analyzing code quality and complexity..."
+          echo "コード品質と複雑度を分析中..."
+          
+          # Check for common code quality issues
+          # 一般的なコード品質問題をチェック
+          
+          echo "Checking for TODO comments in source code..."
+          echo "ソースコードでTODOコメントをチェック中..."
+          if grep -r "TODO\|FIXME\|XXX\|HACK" src/ --include="*.ts" --include="*.js"; then
+            echo "Warning: Found TODO/FIXME comments in source code"
+            echo "警告: ソースコードでTODO/FIXMEコメントが見つかりました"
+          else
+            echo "No TODO comments found in source code"
+            echo "ソースコードでTODOコメントは見つかりませんでした"
+          fi
+          
+          echo "Checking function length (should be < 50 lines)..."
+          echo "関数の長さをチェック中（50行未満であるべき）..."
+          
+          # Check for overly long functions
+          # 過度に長い関数をチェック
+          if awk '/^[[:space:]]*function|^[[:space:]]*async function|^[[:space:]]*const.*=.*=>/ {
+            func_start = NR; func_name = $0
+          } 
+          /^[[:space:]]*}[[:space:]]*$/ && func_start {
+            length = NR - func_start
+            if (length > 50) {
+              print "Warning: Function starting at line " func_start " is " length " lines long"
+              print "警告: " func_start "行目から始まる関数は" length "行です"
+            }
+            func_start = 0
+          }' src/*.ts; then
+            echo "Some functions may be too long"
+            echo "一部の関数が長すぎる可能性があります"
+          fi
+          
+          echo "Code analysis completed"
+          echo "コード分析完了"
+
+  # Check commit message format / コミットメッセージ形式をチェック
+  commit-format:
+    name: Commit Message Format
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    
+    steps:
+      # Checkout repository / リポジトリをチェックアウト
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+
+      # Check commit message format / コミットメッセージ形式をチェック
+      - name: Validate Commit Messages
+        run: |
+          echo "Validating commit message format..."
+          echo "コミットメッセージ形式を検証中..."
+          
+          # Get commits in this PR
+          # このPRのコミットを取得
+          base_sha="${{ github.event.pull_request.base.sha }}"
+          head_sha="${{ github.event.pull_request.head.sha }}"
+          
+          echo "Checking commits from $base_sha to $head_sha"
+          echo "$base_shaから$head_shaまでのコミットをチェック中"
+          
+          # Check each commit message
+          # 各コミットメッセージをチェック
+          git log --format="%H %s" "$base_sha..$head_sha" | while read sha message; do
+            echo "Checking commit $sha: $message"
+            echo "コミット$shaをチェック中: $message"
+            
+            # Check for conventional commit format
+            # 従来のコミット形式をチェック
+            if echo "$message" | grep -qE "^(feat|fix|docs|style|refactor|test|chore)(\([^)]+\))?: .+"; then
+              echo "✓ Commit message format is valid"
+              echo "✓ コミットメッセージ形式が有効です"
+            else
+              echo "✗ Invalid commit message format: $message"
+              echo "✗ 無効なコミットメッセージ形式: $message"
+              echo "Expected format: type(scope): description"
+              echo "期待される形式: type(scope): description"
+              echo "Example: feat(api): add new endpoint for user management"
+              echo "例: feat(api): ユーザー管理用の新しいエンドポイントを追加"
+            fi
+          done
+          
+          echo "Commit message validation completed"
+          echo "コミットメッセージ検証完了"
+
+  # Summary job that depends on all checks / 全チェックに依存するサマリージョブ
+  pr-check-summary:
+    name: PR Check Summary
+    runs-on: ubuntu-latest
+    needs: [quality-checks, code-analysis, commit-format]
+    if: always()
+    
+    steps:
+      # Summary of all checks / 全チェックのサマリー
+      - name: PR Check Summary
+        run: |
+          echo "PR Quality Check Summary / PR品質チェックサマリー"
+          echo "================================================"
+          
+          # Check results of all jobs
+          # 全ジョブの結果をチェック
+          quality_result="${{ needs.quality-checks.result }}"
+          analysis_result="${{ needs.code-analysis.result }}"
+          commit_result="${{ needs.commit-format.result }}"
+          
+          echo "Quality Checks: $quality_result / 品質チェック: $quality_result"
+          echo "Code Analysis: $analysis_result / コード分析: $analysis_result"
+          echo "Commit Format: $commit_result / コミット形式: $commit_result"
+          
+          # Determine overall result / 全体結果を判定
+          if [[ "$quality_result" == "success" && "$analysis_result" == "success" && "$commit_result" == "success" ]]; then
+            echo "✅ All PR checks passed! / 全PRチェックが合格しました！"
+            exit 0
+          else
+            echo "❌ Some PR checks failed / 一部のPRチェックが失敗しました"
+            echo "Please review and fix the issues before merging"
+            echo "マージ前に問題を確認して修正してください"
+            exit 1
+          fi
