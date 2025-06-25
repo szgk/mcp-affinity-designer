@@ -62,12 +62,43 @@ Configure your MCP client to use this server:
 ```
 
 ## Development
+## 開発
 
+### Setup / セットアップ
 ```bash
+# Install dependencies / 依存関係をインストール
 npm install
+
+# Build the project / プロジェクトをビルド
 npm run build
+
+# Run development server / 開発サーバーを実行
 npm run dev
 ```
+
+### Available Commands / 利用可能なコマンド
+```bash
+npm run build      # Build TypeScript to JavaScript / TypeScriptをJavaScriptにビルド
+npm run dev        # Run development server with auto-reload / 自動リロード付き開発サーバーを実行
+npm run lint       # Run ESLint for code quality / コード品質チェック用ESLintを実行
+npm run typecheck  # Run TypeScript type checking / TypeScript型チェックを実行
+```
+
+### Testing / テスト
+```bash
+# Test the MCP server manually / MCPサーバーを手動でテスト
+node test-server.js
+
+# Or run the server directly / またはサーバーを直接実行
+node dist/index.js
+```
+
+### Available Tools / 利用可能なツール
+The MCP server currently provides these tools:
+MCPサーバーは現在以下のツールを提供します：
+
+- `get_server_info` - Get server information and status / サーバー情報とステータスを取得
+- `check_affinity_designer` - Check Affinity Designer installation / Affinity Designerのインストールをチェック
 
 ## License
 
