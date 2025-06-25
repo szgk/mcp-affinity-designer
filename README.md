@@ -100,6 +100,36 @@ MCPサーバーは現在以下のツールを提供します：
 - `get_server_info` - Get server information and status / サーバー情報とステータスを取得
 - `check_affinity_designer` - Check Affinity Designer installation / Affinity Designerのインストールをチェック
 
+## Contributing / 貢献
+
+### Development Workflow / 開発ワークフロー
+Please follow our Git workflow and branch strategy when contributing:
+貢献する際は、Gitワークフローとブランチ戦略に従ってください：
+
+- **Read**: [WORKFLOW.md](./WORKFLOW.md) for detailed development guidelines
+- **読む**: 詳細な開発ガイドラインは [WORKFLOW.md](./WORKFLOW.md) を参照
+- **Read**: [CLAUDE.md](./CLAUDE.md) for project configuration and standards
+- **読む**: プロジェクト設定と標準については [CLAUDE.md](./CLAUDE.md) を参照
+
+### Quick Start for Contributors / 協力者向けクイックスタート
+```bash
+# 1. Create feature branch for issue / issue用featureブランチを作成
+git checkout -b feature/issue-N-description
+
+# 2. Make changes with conventional commits / 従来のコミットで変更を作成
+git commit -m "feat(scope): description
+
+English description.
+
+日本語説明。
+
+Part of #N"
+
+# 3. Push and create PR / プッシュしてPRを作成
+git push -u origin feature/issue-N-description
+gh pr create --title "Title" --body "Description"
+```
+
 ## License
 
 MIT

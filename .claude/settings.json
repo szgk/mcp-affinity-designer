@@ -30,6 +30,19 @@
     "windowsAutomation": ["powershell", "com", "win32api", "dotnet"],
     "macosStatus": "seeking_contributors"
   },
+  "git": {
+    "branchStrategy": "feature-branches",
+    "branchNaming": "feature/issue-{number}-{description}",
+    "commitConvention": "conventional-commits",
+    "requireIssueReference": true,
+    "workflowSteps": [
+      "Create feature branch for each issue",
+      "Make incremental logical commits", 
+      "Use conventional commit format with bilingual messages",
+      "Reference issue numbers in commits and PRs",
+      "Clean up branches after merge"
+    ]
+  },
   "instructions": {
     "general": [
       "Always provide both English and Japanese versions of all text",
@@ -39,11 +52,23 @@
       "Follow the established project structure and naming conventions",
       "確立されたプロジェクト構造と命名規則に従う"
     ],
+    "git_workflow": [
+      "Always create feature branches for GitHub issues",
+      "GitHub issueに対して必ずfeatureブランチを作成する",
+      "Use conventional commit format: type(scope): description",
+      "従来のコミット形式を使用: type(scope): description",
+      "Make small, logical commits with clear purposes",
+      "明確な目的を持つ小さく論理的なコミットを作成する",
+      "Reference issue numbers in commit messages (Addresses #N, Closes #N)",
+      "コミットメッセージでissue番号を参照する (Addresses #N, Closes #N)"
+    ],
     "commits": [
       "Include Japanese translation in all commit messages",
       "全てのコミットメッセージに日本語訳を含める",
-      "Use the standard commit format with bilingual descriptions",
-      "バイリンガル説明を含む標準コミット形式を使用する"
+      "Use conventional commit format with bilingual descriptions",
+      "バイリンガル説明を含む従来のコミット形式を使用する",
+      "Reference GitHub issues appropriately (Part of #N, Addresses #N, Closes #N)",
+      "GitHub issueを適切に参照する (Part of #N, Addresses #N, Closes #N)"
     ],
     "documentation": [
       "All README and documentation files must be bilingual",
