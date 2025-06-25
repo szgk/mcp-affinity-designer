@@ -1,0 +1,52 @@
+{
+  "project": {
+    "name": "MCP Affinity Designer Server",
+    "description": "MCP server for Affinity Designer integration",
+    "language": "bilingual",
+    "primaryLanguages": ["en", "ja"]
+  },
+  "formatting": {
+    "requireBilingualComments": true,
+    "requireBilingualCommits": true,
+    "requireBilingualDocumentation": true,
+    "commentFormat": "// English comment\n// 日本語コメント"
+  },
+  "development": {
+    "codeStyle": "typescript",
+    "testFramework": "jest",
+    "linting": "eslint",
+    "buildTool": "tsc"
+  },
+  "mcp": {
+    "protocol": "stdio",
+    "capabilities": [
+      "document_management",
+      "layer_operations", 
+      "object_manipulation",
+      "export_functionality"
+    ],
+    "platforms": ["macos", "windows"]
+  },
+  "instructions": {
+    "general": [
+      "Always provide both English and Japanese versions of all text",
+      "全てのテキストに英語版と日本語版の両方を提供する",
+      "Use bilingual format for all documentation and comments",
+      "全てのドキュメントとコメントでバイリンガル形式を使用する",
+      "Follow the established project structure and naming conventions",
+      "確立されたプロジェクト構造と命名規則に従う"
+    ],
+    "commits": [
+      "Include Japanese translation in all commit messages",
+      "全てのコミットメッセージに日本語訳を含める",
+      "Use the standard commit format with bilingual descriptions",
+      "バイリンガル説明を含む標準コミット形式を使用する"
+    ],
+    "documentation": [
+      "All README and documentation files must be bilingual",
+      "全てのREADMEとドキュメントファイルはバイリンガルである必要がある",
+      "API documentation should include examples in both languages",
+      "APIドキュメントは両言語でのサンプルを含む必要がある"
+    ]
+  }
+}
