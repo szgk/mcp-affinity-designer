@@ -1,14 +1,44 @@
 # MCP Affinity Designer Server
+# MCP Affinity Designer サーバー
 
 MCP (Model Context Protocol) server for Affinity Designer integration.
+Affinity Designer統合用のMCP（Model Context Protocol）サーバーです。
 
 ## Overview
+## 概要
 
 This MCP server enables AI assistants to interact with Affinity Designer, providing capabilities for:
-- Document manipulation
-- Layer management
-- Export operations
-- Tool automation
+このMCPサーバーは、AIアシスタントがAffinity Designerと連携できるようにし、以下の機能を提供します：
+
+- Document manipulation / ドキュメント操作
+- Layer management / レイヤー管理
+- Export operations / エクスポート操作
+- Tool automation / ツール自動化
+
+## Platform Support
+## プラットフォームサポート
+
+**Primary Target: Windows**
+**主要ターゲット：Windows**
+
+Windows implementation uses:
+Windows実装では以下を使用します：
+- PowerShell automation scripts / PowerShell自動化スクリプト
+- COM (Component Object Model) if available / COM（Component Object Model）利用可能な場合
+- Win32 API for window management / ウィンドウ管理用Win32 API
+- .NET libraries for advanced functionality / 高度な機能用.NETライブラリ
+
+**Secondary Target: macOS (Contributors Needed)**
+**セカンダリターゲット：macOS（協力者募集中）**
+
+We are seeking contributors with macOS environment to help implement:
+macOS環境を持つ協力者を募集して以下の実装をお手伝いいただいています：
+- AppleScript/JavaScript for Automation (JXA) integration
+- macOS testing and validation
+- Platform-specific feature development
+
+If you have macOS and Affinity Designer, please see our [macOS support issue](https://github.com/szgk/mcp-affinity-designer/issues/6) for ways to contribute!
+macOSとAffinity Designerをお持ちの方は、協力方法について[macOSサポートissue](https://github.com/szgk/mcp-affinity-designer/issues/6)をご覧ください！
 
 ## Installation
 

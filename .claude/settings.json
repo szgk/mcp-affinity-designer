@@ -25,7 +25,10 @@
       "object_manipulation",
       "export_functionality"
     ],
-    "platforms": ["macos", "windows"]
+    "platforms": ["windows", "macos"],
+    "primaryPlatform": "windows",
+    "windowsAutomation": ["powershell", "com", "win32api", "dotnet"],
+    "macosStatus": "seeking_contributors"
   },
   "instructions": {
     "general": [

@@ -12,9 +12,9 @@
 
 2. **Affinity Designer API research**
    **Affinity Designer API調査**
-   - Research Affinity Designer's automation capabilities / Affinity Designerの自動化機能を調査
-   - Investigate AppleScript/JavaScript for Automation (JXA) on macOS / macOSでのAppleScript/JavaScript for Automation (JXA)を調査
-   - Research Windows automation options / Windowsでの自動化オプションを調査
+   - Research Windows automation options (PowerShell, COM, Win32 API) / Windows自動化オプションを調査（PowerShell、COM、Win32 API）
+   - Research Affinity Designer's automation capabilities on Windows / WindowsでのAffinity Designerの自動化機能を調査
+   - Investigate AppleScript/JavaScript for Automation (JXA) on macOS (contributors needed) / macOSでのAppleScript/JavaScript for Automation (JXA)を調査（協力者募集中）
 
 ## Phase 2: Basic Operations
 ## フェーズ2: 基本操作

@@ -100,8 +100,40 @@ This server will provide the following capabilities:
 ## Platform Support
 ## プラットフォームサポート
 
-- macOS (primary target with AppleScript/JXA support)
-- Windows (secondary target with automation libraries)
+- Windows (primary target with automation libraries like PowerShell, COM, .NET)
+- macOS (secondary target - seeking contributors with macOS testing environment)
 
-- macOS（AppleScript/JXAサポートによる主要ターゲット）
-- Windows（自動化ライブラリによるセカンダリターゲット）
+- Windows（PowerShell、COM、.NET等の自動化ライブラリによる主要ターゲット）
+- macOS（セカンダリターゲット - macOSテスト環境を持つ協力者を募集中）
+
+### Windows Automation Approach
+### Windows自動化アプローチ
+
+The Windows implementation will focus on:
+Windows実装は以下に焦点を当てます：
+
+- COM (Component Object Model) automation if available
+- PowerShell scripts for application control
+- Win32 API calls for window management
+- File system monitoring for document changes
+
+- 利用可能な場合はCOM（Component Object Model）自動化
+- アプリケーション制御用PowerShellスクリプト
+- ウィンドウ管理用Win32 API呼び出し
+- ドキュメント変更のファイルシステム監視
+
+### macOS Support Status
+### macOSサポート状況
+
+macOS support is planned but requires contributors with:
+macOSサポートは計画されていますが、以下を持つ協力者が必要です：
+
+- macOS development environment
+- Affinity Designer installed on macOS
+- Experience with AppleScript/JavaScript for Automation (JXA)
+- Ability to test automation scripts
+
+- macOS開発環境
+- macOSにインストール済みのAffinity Designer
+- AppleScript/JavaScript for Automation (JXA)の経験
+- 自動化スクリプトのテスト能力
