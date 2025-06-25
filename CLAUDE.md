@@ -239,6 +239,106 @@ git branch -d feature/issue-N-description
 - Very large commits with many changes / 多くの変更を含む非常に大きなコミット
 - Generic commit messages like "fix" or "update" / "fix"や"update"のような汎用的なコミットメッセージ
 
+## AI Code Review and Quality Standards
+## AIコードレビューと品質基準
+
+### Mandatory AI Self-Review Process
+### 必須AIセルフレビュープロセス
+
+**IMPORTANT: Claude must perform self-review after writing any code.**
+**重要: Claudeはコードを書いた後、必ずセルフレビューを実行する必要があります。**
+
+After creating or modifying code, Claude must:
+コードを作成または修正した後、Claudeは以下を実行する必要があります：
+
+1. **Review for redundancy / 冗長性の確認**
+   - Remove duplicate code / 重複コードの削除
+   - Eliminate unnecessary comments / 不要なコメントの除去
+   - Simplify overly complex logic / 過度に複雑なロジックの簡素化
+
+2. **Check readability / 可読性の確認**
+   - Use clear, descriptive variable names / 明確で説明的な変数名を使用
+   - Add meaningful comments only where necessary / 必要な場合のみ意味のあるコメントを追加
+   - Ensure proper code structure and formatting / 適切なコード構造とフォーマットを確保
+
+3. **Verify functionality / 機能の検証**
+   - Ensure code builds without errors / エラーなしでコードがビルドされることを確認
+   - Check for logical errors / 論理エラーの確認
+   - Validate edge cases are handled / エッジケースが処理されていることを検証
+
+4. **Optimize for maintainability / 保守性の最適化**
+   - Follow project conventions / プロジェクト規約に従う
+   - Use consistent naming patterns / 一貫した命名パターンを使用
+   - Ensure code is self-documenting / コードが自己文書化されていることを確保
+
+### Code Quality Requirements
+### コード品質要件
+
+**Readability Standards / 可読性基準:**
+- Functions should be small and focused (< 50 lines ideal) / 関数は小さく焦点を絞る（50行未満が理想）
+- Use meaningful names that explain purpose / 目的を説明する意味のある名前を使用
+- Avoid deep nesting (> 3 levels) / 深いネスト（3レベル超）を避ける
+- Group related functionality together / 関連する機能をグループ化
+
+**Comment Guidelines / コメントガイドライン:**
+- Write comments to explain "why", not "what" / "何を"ではなく"なぜ"を説明するコメントを書く
+- Use bilingual comments for public APIs / パブリックAPIにはバイリンガルコメントを使用
+- Remove TODO comments before committing / コミット前にTODOコメントを削除
+- Update comments when code changes / コードが変更されたらコメントも更新
+
+**Error Handling Standards / エラーハンドリング基準:**
+- Always handle potential errors gracefully / 潜在的なエラーを常に適切に処理
+- Provide meaningful error messages in both languages / 両言語で意味のあるエラーメッセージを提供
+- Use appropriate error types and codes / 適切なエラータイプとコードを使用
+- Log errors with sufficient context / 十分なコンテキストでエラーをログ
+
+### Review Checklist for Claude
+### Claude用レビューチェックリスト
+
+Before finalizing any code, Claude must verify:
+コードを確定する前に、Claudeは以下を検証する必要があります：
+
+**Structure and Organization / 構造と組織:**
+- [ ] Code follows project structure conventions / コードがプロジェクト構造規約に従っている
+- [ ] Imports are organized and necessary / インポートが整理され必要である
+- [ ] Functions are logically grouped / 関数が論理的にグループ化されている
+- [ ] No dead or unreachable code / デッドコードや到達不可能なコードがない
+
+**Naming and Documentation / 命名とドキュメント:**
+- [ ] All variables have descriptive names / 全ての変数が説明的な名前を持つ
+- [ ] Function names clearly describe their purpose / 関数名が目的を明確に説明している
+- [ ] Complex logic has explanatory comments / 複雑なロジックに説明コメントがある
+- [ ] Public interfaces have bilingual documentation / パブリックインターフェースにバイリンガルドキュメントがある
+
+**Functionality and Reliability / 機能性と信頼性:**
+- [ ] Code builds without warnings or errors / コードが警告やエラーなしでビルドされる
+- [ ] All edge cases are handled / 全てのエッジケースが処理されている
+- [ ] Error conditions are properly managed / エラー条件が適切に管理されている
+- [ ] No magic numbers or hardcoded values / マジックナンバーやハードコードされた値がない
+
+**Performance and Efficiency / パフォーマンスと効率性:**
+- [ ] No obvious performance bottlenecks / 明らかなパフォーマンスボトルネックがない
+- [ ] Resources are properly managed / リソースが適切に管理されている
+- [ ] Algorithms are reasonably efficient / アルゴリズムが合理的に効率的である
+- [ ] No memory leaks or resource leaks / メモリリークやリソースリークがない
+
+**Maintainability / 保守性:**
+- [ ] Code follows DRY principle / コードがDRY原則に従っている
+- [ ] Dependencies are minimal and justified / 依存関係が最小限で正当化されている
+- [ ] Code is testable / コードがテスト可能である
+- [ ] Future modifications will be straightforward / 将来の修正が簡単である
+
+### Immediate Action Required
+### 即座に必要なアクション
+
+When Claude identifies issues during self-review:
+セルフレビュー中にClaude が問題を特定した場合：
+
+1. **Fix immediately** - Don't wait for human feedback / **即座に修正** - 人間のフィードバックを待たない
+2. **Explain changes** - Document what was improved / **変更を説明** - 改善された内容を文書化
+3. **Re-review** - Check again after fixes / **再レビュー** - 修正後に再度確認
+4. **Test thoroughly** - Ensure fixes don't break functionality / **徹底的にテスト** - 修正が機能を壊さないことを確認
+
 ## Platform Support
 ## プラットフォームサポート
 

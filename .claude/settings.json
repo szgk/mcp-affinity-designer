@@ -43,6 +43,29 @@
       "Clean up branches after merge"
     ]
   },
+  "codeQuality": {
+    "mandatoryReview": true,
+    "selfReviewRequired": true,
+    "reviewSteps": [
+      "Check for redundancy and unnecessary code",
+      "Verify readability and clear naming",
+      "Ensure functionality and error handling",
+      "Optimize for maintainability"
+    ],
+    "readabilityStandards": {
+      "maxFunctionLines": 50,
+      "maxNestingLevel": 3,
+      "requireMeaningfulNames": true,
+      "bilingualCommentsForAPIs": true
+    },
+    "qualityChecks": [
+      "No dead code",
+      "No magic numbers",
+      "Proper error handling",
+      "DRY principle followed",
+      "Code is self-documenting"
+    ]
+  },
   "instructions": {
     "general": [
       "Always provide both English and Japanese versions of all text",
@@ -51,6 +74,16 @@
       "全てのドキュメントとコメントでバイリンガル形式を使用する",
       "Follow the established project structure and naming conventions",
       "確立されたプロジェクト構造と命名規則に従う"
+    ],
+    "code_review": [
+      "MANDATORY: Perform self-review after writing any code",
+      "必須: コード記述後は必ずセルフレビューを実行する",
+      "Fix issues immediately upon identification",
+      "問題を特定したら即座に修正する",
+      "Ensure code is readable and maintainable",
+      "コードが読みやすく保守可能であることを確保する",
+      "Remove redundant code and comments",
+      "冗長なコードとコメントを除去する"
     ],
     "git_workflow": [
       "Always create feature branches for GitHub issues",

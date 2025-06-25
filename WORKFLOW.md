@@ -60,6 +60,14 @@ git checkout -b feature/issue-2-api-research
 ### 2. Making Commits
 ### 2. コミット作成
 
+**IMPORTANT: Code Review First / 重要: まずコードレビュー**
+Before making any commit, Claude must perform mandatory self-review:
+コミットを行う前に、Claudeは必須のセルフレビューを実行する必要があります：
+
+- Follow [CODE_REVIEW_CHECKLIST.md](./CODE_REVIEW_CHECKLIST.md) / [CODE_REVIEW_CHECKLIST.md](./CODE_REVIEW_CHECKLIST.md) に従う
+- Fix any identified issues immediately / 特定された問題を即座に修正
+- Ensure code meets quality standards / コードが品質基準を満たすことを確保
+
 **Commit early and often / 早期に頻繁にコミット:**
 - Make a commit after each logical unit of work / 論理的な作業単位ごとにコミット
 - Don't wait until the entire feature is complete / 機能全体が完了するまで待たない

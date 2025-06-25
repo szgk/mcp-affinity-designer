@@ -116,7 +116,11 @@ Please follow our Git workflow and branch strategy when contributing:
 # 1. Create feature branch for issue / issue用featureブランチを作成
 git checkout -b feature/issue-N-description
 
-# 2. Make changes with conventional commits / 従来のコミットで変更を作成
+# 2. Write code and perform mandatory self-review / コードを書いて必須セルフレビューを実行
+# Follow CODE_REVIEW_CHECKLIST.md before committing
+# コミット前にCODE_REVIEW_CHECKLIST.mdに従う
+
+# 3. Make changes with conventional commits / 従来のコミットで変更を作成
 git commit -m "feat(scope): description
 
 English description.
@@ -125,10 +129,19 @@ English description.
 
 Part of #N"
 
-# 3. Push and create PR / プッシュしてPRを作成
+# 4. Push and create PR / プッシュしてPRを作成
 git push -u origin feature/issue-N-description
 gh pr create --title "Title" --body "Description"
 ```
+
+### Code Quality / コード品質
+All code must pass our quality standards:
+全てのコードは品質基準を満たす必要があります：
+
+- **Mandatory Review**: [CODE_REVIEW_CHECKLIST.md](./CODE_REVIEW_CHECKLIST.md) must be followed
+- **必須レビュー**: [CODE_REVIEW_CHECKLIST.md](./CODE_REVIEW_CHECKLIST.md) に従う必要があります
+- **Self-review required**: AI must review and fix code before committing
+- **セルフレビュー必須**: AIはコミット前にコードをレビューし修正する必要があります
 
 ## License
 

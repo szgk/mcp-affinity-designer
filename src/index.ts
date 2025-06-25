@@ -17,11 +17,17 @@ import {
   McpError,
 } from '@modelcontextprotocol/sdk/types.js';
 
+// Constants / 定数
+const SERVER_NAME = 'mcp-affinity-designer';
+const SERVER_VERSION = '0.1.0';
+const JSON_INDENT_SPACES = 2;
+const LOG_PREFIX = '[MCP Affinity Designer]';
+
 // Server instance / サーバーインスタンス
 const server = new Server(
   {
-    name: 'mcp-affinity-designer',
-    version: '0.1.0',
+    name: SERVER_NAME,
+    version: SERVER_VERSION,
   },
   {
     capabilities: {
@@ -36,8 +42,8 @@ const server = new Server(
  */
 function handleError(error: unknown, context: string): McpError {
   const message = error instanceof Error ? error.message : String(error);
-  console.error(`[MCP Affinity Designer] Error in ${context}: ${message}`);
-  console.error(`[MCP Affinity Designer] ${context}でエラー: ${message}`);
+  console.error(`${LOG_PREFIX} Error in ${context}: ${message}`);
+  console.error(`${LOG_PREFIX} ${context}でエラー: ${message}`);
   
   return new McpError(
     ErrorCode.InternalError,
@@ -90,7 +96,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
               type: 'text',
               text: JSON.stringify({
                 name: 'MCP Affinity Designer Server',
-                version: '0.1.0',
+                version: SERVER_VERSION,
                 description: 'MCP server for Affinity Designer automation',
                 platform: process.platform,
                 node_version: process.version,
@@ -99,7 +105,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
                 説明: 'Affinity Designer自動化用MCPサーバー',
                 プラットフォーム: process.platform,
                 ステータス: 'アクティブ'
-              }, null, 2),
+              }, null, JSON_INDENT_SPACES),
             },
           ],
         };
@@ -126,7 +132,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
                   'COM/PowerShell統合の追加',
                   '実際のAffinity Designerインストールでのテスト'
                 ]
-              }, null, 2),
+              }, null, JSON_INDENT_SPACES),
             },
           ],
         };
@@ -154,41 +160,41 @@ async function main() {
     // Create stdio transport / stdio トランスポートを作成
     const transport = new StdioServerTransport();
     
-    console.error('[MCP Affinity Designer] Starting server...');
-    console.error('[MCP Affinity Designer] サーバーを開始しています...');
+    console.error(`${LOG_PREFIX} Starting server...`);
+    console.error(`${LOG_PREFIX} サーバーを開始しています...`);
     
     // Connect server to transport / サーバーをトランスポートに接続
     await server.connect(transport);
     
-    console.error('[MCP Affinity Designer] Server started successfully');
-    console.error('[MCP Affinity Designer] サーバーが正常に開始されました');
+    console.error(`${LOG_PREFIX} Server started successfully`);
+    console.error(`${LOG_PREFIX} サーバーが正常に開始されました`);
   } catch (error) {
-    console.error('[MCP Affinity Designer] Failed to start server:', error);
-    console.error('[MCP Affinity Designer] サーバーの開始に失敗:', error);
+    console.error(`${LOG_PREFIX} Failed to start server:`, error);
+    console.error(`${LOG_PREFIX} サーバーの開始に失敗:`, error);
     process.exit(1);
   }
 }
 
-// Handle graceful shutdown / 正常なシャットダウンを処理
-process.on('SIGINT', async () => {
-  console.error('[MCP Affinity Designer] Shutting down...');
-  console.error('[MCP Affinity Designer] シャットダウン中...');
+/**
+ * Handle graceful shutdown
+ * 正常なシャットダウンを処理
+ */
+async function gracefulShutdown() {
+  console.error(`${LOG_PREFIX} Shutting down...`);
+  console.error(`${LOG_PREFIX} シャットダウン中...`);
   await server.close();
   process.exit(0);
-});
+}
 
-process.on('SIGTERM', async () => {
-  console.error('[MCP Affinity Designer] Shutting down...');
-  console.error('[MCP Affinity Designer] シャットダウン中...');
-  await server.close();
-  process.exit(0);
-});
+// Handle graceful shutdown signals / 正常なシャットダウンシグナルを処理
+process.on('SIGINT', gracefulShutdown);
+process.on('SIGTERM', gracefulShutdown);
 
 // Start the server / サーバーを開始
 if (require.main === module) {
   main().catch((error) => {
-    console.error('[MCP Affinity Designer] Fatal error:', error);
-    console.error('[MCP Affinity Designer] 致命的エラー:', error);
+    console.error(`${LOG_PREFIX} Fatal error:`, error);
+    console.error(`${LOG_PREFIX} 致命的エラー:`, error);
     process.exit(1);
   });
 }
