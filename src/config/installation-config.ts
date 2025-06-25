@@ -1,0 +1,393 @@
+/**
+ * Installation Configuration Management
+ * インストール設定管理
+ * 
+ * This module handles configuration for Affinity Designer installation paths
+ * and system-specific settings for automation.
+ * このモジュールは、Affinity Designerインストールパスと
+ * 自動化用システム固有設定を処理します。
+ */
+
+import * as fs from 'fs';
+import * as path from 'path';
+import * as os from 'os';
+
+/**
+ * Configuration interface for installation settings
+ * インストール設定用設定インターフェース
+ */
+export interface InstallationConfig {
+  readonly affinityInstallPaths: string[];
+  readonly documentSearchPaths: string[];
+  readonly timeouts: {
+    readonly processStart: number;
+    readonly commandExecution: number;
+    readonly pollingInterval: number;
+  };
+  readonly processNames: string[];
+  readonly retryAttempts: number;
+  readonly platform: string;
+}
+
+/**
+ * Default configuration for Windows systems
+ * Windowsシステム用デフォルト設定
+ */
+const DEFAULT_WINDOWS_CONFIG: InstallationConfig = {
+  affinityInstallPaths: [
+    'C:\\Program Files\\Affinity\\Affinity Designer 2\\Affinity Designer 2.exe',
+    'C:\\Program Files (x86)\\Affinity\\Affinity Designer 2\\Affinity Designer 2.exe',
+    'C:\\Program Files\\Affinity\\Affinity Designer\\Affinity Designer.exe',
+    'C:\\Program Files (x86)\\Affinity\\Affinity Designer\\Affinity Designer.exe'
+  ],
+  documentSearchPaths: [
+    path.join(os.homedir(), 'Documents'),
+    path.join(os.homedir(), 'Desktop'),
+    path.join(os.homedir(), 'Downloads'),
+    path.join(os.homedir(), 'OneDrive', 'Documents'),
+    path.join(os.homedir(), 'OneDrive', 'Desktop')
+  ],
+  timeouts: {
+    processStart: 10000,
+    commandExecution: 5000,
+    pollingInterval: 1000
+  },
+  processNames: [
+    'Affinity Designer*',
+    'AffinityDesigner*',
+    'Designer*'
+  ],
+  retryAttempts: 3,
+  platform: 'win32'
+};
+
+/**
+ * Default configuration for macOS systems (placeholder for future implementation)
+ * macOSシステム用デフォルト設定（将来の実装用プレースホルダー）
+ */
+const DEFAULT_MACOS_CONFIG: InstallationConfig = {
+  affinityInstallPaths: [
+    '/Applications/Affinity Designer 2.app/Contents/MacOS/Affinity Designer 2',
+    '/Applications/Affinity Designer.app/Contents/MacOS/Affinity Designer'
+  ],
+  documentSearchPaths: [
+    path.join(os.homedir(), 'Documents'),
+    path.join(os.homedir(), 'Desktop'),
+    path.join(os.homedir(), 'Downloads')
+  ],
+  timeouts: {
+    processStart: 10000,
+    commandExecution: 5000,
+    pollingInterval: 1000
+  },
+  processNames: [
+    'Affinity Designer*',
+    'Designer*'
+  ],
+  retryAttempts: 3,
+  platform: 'darwin'
+};
+
+/**
+ * Configuration Manager for Installation Settings
+ * インストール設定用設定マネージャー
+ */
+export class InstallationConfigManager {
+  private static instance: InstallationConfigManager;
+  private config: InstallationConfig;
+  private customConfigPath?: string;
+
+  private constructor() {
+    this.config = this.getDefaultConfig();
+  }
+
+  /**
+   * Get singleton instance / シングルトンインスタンスを取得
+   */
+  static getInstance(): InstallationConfigManager {
+    if (!InstallationConfigManager.instance) {
+      InstallationConfigManager.instance = new InstallationConfigManager();
+    }
+    return InstallationConfigManager.instance;
+  }
+
+  /**
+   * Get default configuration for current platform
+   * 現在のプラットフォーム用デフォルト設定を取得
+   */
+  private getDefaultConfig(): InstallationConfig {
+    switch (process.platform) {
+      case 'win32':
+        return DEFAULT_WINDOWS_CONFIG;
+      case 'darwin':
+        return DEFAULT_MACOS_CONFIG;
+      default:
+        // Fallback to Windows config for unsupported platforms
+        // サポートされていないプラットフォームではWindows設定にフォールバック
+        return { ...DEFAULT_WINDOWS_CONFIG, platform: process.platform };
+    }
+  }
+
+  /**
+   * Get current configuration / 現在の設定を取得
+   */
+  getConfig(): InstallationConfig {
+    return { ...this.config };
+  }
+
+  /**
+   * Load configuration from file / ファイルから設定を読み込み
+   */
+  async loadConfigFromFile(configPath: string): Promise<boolean> {
+    try {
+      if (!fs.existsSync(configPath)) {
+        return false;
+      }
+
+      const configData = fs.readFileSync(configPath, 'utf8');
+      const loadedConfig = JSON.parse(configData) as Partial<InstallationConfig>;
+      
+      // Merge with default config / デフォルト設定とマージ
+      this.config = {
+        ...this.getDefaultConfig(),
+        ...loadedConfig
+      };
+
+      this.customConfigPath = configPath;
+      return true;
+
+    } catch (error) {
+      console.error('Failed to load configuration:', error);
+      console.error('設定の読み込みに失敗:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Save current configuration to file / 現在の設定をファイルに保存
+   */
+  async saveConfigToFile(configPath: string): Promise<boolean> {
+    try {
+      const configData = JSON.stringify(this.config, null, 2);
+      fs.writeFileSync(configPath, configData, 'utf8');
+      this.customConfigPath = configPath;
+      return true;
+
+    } catch (error) {
+      console.error('Failed to save configuration:', error);
+      console.error('設定の保存に失敗:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Update installation paths / インストールパスを更新
+   */
+  updateInstallationPaths(paths: string[]): void {
+    this.config = {
+      ...this.config,
+      affinityInstallPaths: [...paths]
+    };
+  }
+
+  /**
+   * Add custom installation path / カスタムインストールパスを追加
+   */
+  addInstallationPath(installPath: string): void {
+    if (!this.config.affinityInstallPaths.includes(installPath)) {
+      this.config = {
+        ...this.config,
+        affinityInstallPaths: [...this.config.affinityInstallPaths, installPath]
+      };
+    }
+  }
+
+  /**
+   * Update document search paths / ドキュメント検索パスを更新
+   */
+  updateDocumentSearchPaths(paths: string[]): void {
+    this.config = {
+      ...this.config,
+      documentSearchPaths: [...paths]
+    };
+  }
+
+  /**
+   * Add custom document search path / カスタムドキュメント検索パスを追加
+   */
+  addDocumentSearchPath(searchPath: string): void {
+    if (!this.config.documentSearchPaths.includes(searchPath)) {
+      this.config = {
+        ...this.config,
+        documentSearchPaths: [...this.config.documentSearchPaths, searchPath]
+      };
+    }
+  }
+
+  /**
+   * Update timeout settings / タイムアウト設定を更新
+   */
+  updateTimeouts(timeouts: Partial<InstallationConfig['timeouts']>): void {
+    this.config = {
+      ...this.config,
+      timeouts: {
+        ...this.config.timeouts,
+        ...timeouts
+      }
+    };
+  }
+
+  /**
+   * Reset to default configuration / デフォルト設定にリセット
+   */
+  resetToDefault(): void {
+    this.config = this.getDefaultConfig();
+    this.customConfigPath = undefined;
+  }
+
+  /**
+   * Validate current configuration / 現在の設定を検証
+   */
+  validateConfig(): { isValid: boolean; errors: string[] } {
+    const errors: string[] = [];
+
+    // Validate installation paths / インストールパスを検証
+    if (!Array.isArray(this.config.affinityInstallPaths) || this.config.affinityInstallPaths.length === 0) {
+      errors.push('Installation paths must be a non-empty array / インストールパスは空でない配列である必要があります');
+    }
+
+    // Validate document search paths / ドキュメント検索パスを検証
+    if (!Array.isArray(this.config.documentSearchPaths) || this.config.documentSearchPaths.length === 0) {
+      errors.push('Document search paths must be a non-empty array / ドキュメント検索パスは空でない配列である必要があります');
+    }
+
+    // Validate timeouts / タイムアウトを検証
+    const { processStart, commandExecution, pollingInterval } = this.config.timeouts;
+    if (processStart <= 0 || commandExecution <= 0 || pollingInterval <= 0) {
+      errors.push('All timeout values must be positive numbers / 全てのタイムアウト値は正の数である必要があります');
+    }
+
+    // Validate retry attempts / 再試行回数を検証
+    if (this.config.retryAttempts < 0) {
+      errors.push('Retry attempts must be non-negative / 再試行回数は非負の数である必要があります');
+    }
+
+    return {
+      isValid: errors.length === 0,
+      errors
+    };
+  }
+
+  /**
+   * Find valid installation path / 有効なインストールパスを検索
+   */
+  findValidInstallationPath(): string | null {
+    for (const installPath of this.config.affinityInstallPaths) {
+      if (fs.existsSync(installPath)) {
+        return installPath;
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Get accessible document search paths / アクセス可能なドキュメント検索パスを取得
+   */
+  getAccessibleDocumentPaths(): string[] {
+    return this.config.documentSearchPaths.filter(searchPath => {
+      try {
+        return fs.existsSync(searchPath) && fs.statSync(searchPath).isDirectory();
+      } catch {
+        return false;
+      }
+    });
+  }
+
+  /**
+   * Get configuration summary / 設定サマリーを取得
+   */
+  getConfigSummary(): {
+    platform: string;
+    installPathsCount: number;
+    validInstallPath: string | null;
+    documentPathsCount: number;
+    accessibleDocumentPaths: number;
+    hasCustomConfig: boolean;
+  } {
+    return {
+      platform: this.config.platform,
+      installPathsCount: this.config.affinityInstallPaths.length,
+      validInstallPath: this.findValidInstallationPath(),
+      documentPathsCount: this.config.documentSearchPaths.length,
+      accessibleDocumentPaths: this.getAccessibleDocumentPaths().length,
+      hasCustomConfig: !!this.customConfigPath
+    };
+  }
+
+  /**
+   * Create default configuration file / デフォルト設定ファイルを作成
+   */
+  static async createDefaultConfigFile(configPath: string): Promise<boolean> {
+    try {
+      const configManager = new InstallationConfigManager();
+      const defaultConfig = configManager.getDefaultConfig();
+      
+      const configData = JSON.stringify(defaultConfig, null, 2);
+      fs.writeFileSync(configPath, configData, 'utf8');
+      
+      return true;
+
+    } catch (error) {
+      console.error('Failed to create default configuration file:', error);
+      console.error('デフォルト設定ファイルの作成に失敗:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Auto-detect Affinity Designer installations / Affinity Designerインストールを自動検出
+   */
+  async autoDetectInstallations(): Promise<string[]> {
+    const detectedPaths: string[] = [];
+    
+    if (process.platform === 'win32') {
+      // Common Windows installation locations / 一般的なWindowsインストール場所
+      const commonPaths = [
+        'C:\\Program Files\\Affinity',
+        'C:\\Program Files (x86)\\Affinity'
+      ];
+
+      for (const basePath of commonPaths) {
+        try {
+          if (fs.existsSync(basePath)) {
+            const subdirs = fs.readdirSync(basePath);
+            for (const subdir of subdirs) {
+              if (subdir.toLowerCase().includes('designer')) {
+                const exePaths = [
+                  path.join(basePath, subdir, `${subdir}.exe`),
+                  path.join(basePath, subdir, 'Affinity Designer.exe'),
+                  path.join(basePath, subdir, 'Affinity Designer 2.exe')
+                ];
+                
+                for (const exePath of exePaths) {
+                  if (fs.existsSync(exePath)) {
+                    detectedPaths.push(exePath);
+                  }
+                }
+              }
+            }
+          }
+        } catch {
+          // Silent failure for inaccessible directories / アクセスできないディレクトリの静かな失敗
+        }
+      }
+    }
+
+    // Add detected paths to configuration / 検出されたパスを設定に追加
+    for (const detectedPath of detectedPaths) {
+      this.addInstallationPath(detectedPath);
+    }
+
+    return detectedPaths;
+  }
+}

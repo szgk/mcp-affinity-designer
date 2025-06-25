@@ -16,12 +16,17 @@ import {
   ListToolsRequestSchema,
   McpError,
 } from '@modelcontextprotocol/sdk/types.js';
+import { AffinityDesignerMCPTools } from './tools/affinity-tools';
 
 // Constants / 定数
 const SERVER_NAME = 'mcp-affinity-designer';
 const SERVER_VERSION = '0.1.0';
 const JSON_INDENT_SPACES = 2;
 const LOG_PREFIX = '[MCP Affinity Designer]';
+
+// Initialize MCP tools / MCPツールを初期化
+const affinityTools = new AffinityDesignerMCPTools();
+let isToolsInitialized = false;
 
 // Server instance / サーバーインスタンス
 const server = new Server(
@@ -52,31 +57,54 @@ function handleError(error: unknown, context: string): McpError {
 }
 
 /**
+ * Initialize tools if not already done
+ * ツールがまだ初期化されていない場合は初期化
+ */
+async function ensureToolsInitialized(): Promise<void> {
+  if (!isToolsInitialized) {
+    try {
+      const result = await affinityTools.initialize();
+      if (result.success) {
+        isToolsInitialized = true;
+        console.error(`${LOG_PREFIX} Tools initialized successfully`);
+        console.error(`${LOG_PREFIX} ツールの初期化に成功しました`);
+      } else {
+        console.error(`${LOG_PREFIX} Tool initialization failed: ${result.error}`);
+        console.error(`${LOG_PREFIX} ツール初期化失敗: ${result.error}`);
+      }
+    } catch (error) {
+      console.error(`${LOG_PREFIX} Tool initialization error:`, error);
+      console.error(`${LOG_PREFIX} ツール初期化エラー:`, error);
+    }
+  }
+}
+
+/**
  * List available tools
  * 利用可能なツールを一覧表示
  */
 server.setRequestHandler(ListToolsRequestSchema, async () => {
+  await ensureToolsInitialized();
+  
+  // Get all available tools from the affinity tools handler
+  // アフィニティツールハンドラーから利用可能な全ツールを取得
+  const affinityToolsList = affinityTools.getTools();
+  
+  // Add server management tools / サーバー管理ツールを追加
+  const serverTools = [
+    {
+      name: 'get_server_info',
+      description: 'Get information about the MCP Affinity Designer server / MCP Affinity Designerサーバーの情報を取得',
+      inputSchema: {
+        type: 'object',
+        properties: {},
+        required: [],
+      },
+    }
+  ];
+
   return {
-    tools: [
-      {
-        name: 'get_server_info',
-        description: 'Get information about the MCP Affinity Designer server / MCP Affinity Designerサーバーの情報を取得',
-        inputSchema: {
-          type: 'object',
-          properties: {},
-          required: [],
-        },
-      },
-      {
-        name: 'check_affinity_designer',
-        description: 'Check if Affinity Designer is installed and accessible / Affinity Designerがインストールされアクセス可能かチェック',
-        inputSchema: {
-          type: 'object',
-          properties: {},
-          required: [],
-        },
-      },
-    ],
+    tools: [...serverTools, ...affinityToolsList],
   };
 });
 
@@ -86,63 +114,57 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
  */
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
   try {
-    const { name } = request.params;
+    const { name, arguments: args } = request.params;
 
-    switch (name) {
-      case 'get_server_info':
-        return {
-          content: [
-            {
-              type: 'text',
-              text: JSON.stringify({
-                name: 'MCP Affinity Designer Server',
-                version: SERVER_VERSION,
-                description: 'MCP server for Affinity Designer automation',
-                platform: process.platform,
-                node_version: process.version,
-                status: 'active',
-                日本語名: 'MCP Affinity Designer サーバー',
-                説明: 'Affinity Designer自動化用MCPサーバー',
-                プラットフォーム: process.platform,
-                ステータス: 'アクティブ'
-              }, null, JSON_INDENT_SPACES),
-            },
-          ],
-        };
+    // Ensure tools are initialized / ツールが初期化されていることを確認
+    await ensureToolsInitialized();
 
-      case 'check_affinity_designer':
-        // Basic check - in real implementation, this would check for Affinity Designer installation
-        // 基本チェック - 実際の実装では、Affinity Designerのインストールをチェックします
-        return {
-          content: [
-            {
-              type: 'text',
-              text: JSON.stringify({
-                status: 'checking',
-                platform: process.platform,
-                message: 'Affinity Designer detection not yet implemented',
-                日本語メッセージ: 'Affinity Designer検出機能は未実装です',
-                next_steps: [
-                  'Implement Windows automation detection',
-                  'Add COM/PowerShell integration',
-                  'Test with actual Affinity Designer installation'
-                ],
-                次のステップ: [
-                  'Windows自動化検出の実装',
-                  'COM/PowerShell統合の追加',
-                  '実際のAffinity Designerインストールでのテスト'
-                ]
-              }, null, JSON_INDENT_SPACES),
-            },
-          ],
-        };
-
-      default:
-        throw new McpError(
-          ErrorCode.MethodNotFound,
-          `Unknown tool: ${name} / 不明なツール: ${name}`
-        );
+    // Handle server management tools / サーバー管理ツールを処理
+    if (name === 'get_server_info') {
+      const statistics = affinityTools.getStatistics();
+      return {
+        content: [
+          {
+            type: 'text',
+            text: JSON.stringify({
+              name: 'MCP Affinity Designer Server',
+              version: SERVER_VERSION,
+              description: 'MCP server for Affinity Designer automation',
+              platform: process.platform,
+              node_version: process.version,
+              status: 'active',
+              tools_initialized: isToolsInitialized,
+              available_tools: (statistics.data as { availableTools?: number })?.availableTools || 0,
+              日本語名: 'MCP Affinity Designer サーバー',
+              説明: 'Affinity Designer自動化用MCPサーバー',
+              プラットフォーム: process.platform,
+              ステータス: 'アクティブ',
+              ツール初期化: isToolsInitialized,
+              利用可能ツール数: (statistics.data as { availableTools?: number })?.availableTools || 0
+            }, null, JSON_INDENT_SPACES),
+          },
+        ],
+      };
     }
+
+    // Handle Affinity Designer automation tools / Affinity Designer自動化ツールを処理
+    const result = await affinityTools.executeTool(name, args || {});
+    
+    return {
+      content: [
+        {
+          type: 'text',
+          text: JSON.stringify({
+            success: result.success,
+            message: result.message,
+            messageJP: result.messageJP,
+            data: result.data,
+            error: result.error
+          }, null, JSON_INDENT_SPACES),
+        },
+      ],
+    };
+
   } catch (error) {
     if (error instanceof McpError) {
       throw error;
