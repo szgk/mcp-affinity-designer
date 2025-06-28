@@ -144,15 +144,36 @@
                     <div class="step">
                         <div class="step-number">1</div>
                         <div class="step-content">
-                            <h3 class="step-title">Install the Package</h3>
-                            <p class="step-description">パッケージをインストール</p>
+                            <h3 class="step-title">Clone Repository</h3>
+                            <p class="step-description">リポジトリをクローン</p>
                             <div class="code-block">
-                                <code>npm install mcp-affinity-designer</code>
+                                <pre><code>git clone https://github.com/szgk/mcp-affinity-designer.git
+cd mcp-affinity-designer</code></pre>
                             </div>
                         </div>
                     </div>
                     <div class="step">
                         <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h3 class="step-title">Install Dependencies</h3>
+                            <p class="step-description">依存関係をインストール</p>
+                            <div class="code-block">
+                                <code>npm install</code>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h3 class="step-title">Build Project</h3>
+                            <p class="step-description">プロジェクトをビルド</p>
+                            <div class="code-block">
+                                <code>npm run build</code>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">4</div>
                         <div class="step-content">
                             <h3 class="step-title">Configure MCP Client</h3>
                             <p class="step-description">MCPクライアントを設定</p>
@@ -161,7 +182,7 @@
   "mcpServers": {
     "affinity-designer": {
       "command": "node",
-      "args": ["./node_modules/mcp-affinity-designer/dist/index.js"]
+      "args": ["./path/to/mcp-affinity-designer/dist/index.js"]
     }
   }
 }</code></pre>
@@ -169,7 +190,7 @@
                         </div>
                     </div>
                     <div class="step">
-                        <div class="step-number">3</div>
+                        <div class="step-number">5</div>
                         <div class="step-content">
                             <h3 class="step-title">Configure Installation Paths</h3>
                             <p class="step-description">インストールパスを設定</p>
@@ -187,7 +208,7 @@
                         </div>
                     </div>
                     <div class="step">
-                        <div class="step-number">4</div>
+                        <div class="step-number">6</div>
                         <div class="step-content">
                             <h3 class="step-title">Start Using</h3>
                             <p class="step-description">使用開始</p>

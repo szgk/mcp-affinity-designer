@@ -48,8 +48,22 @@
                             <strong>⚠️ Prerequisites:</strong> Install Affinity Designer using MSI installer from official website to ensure proper installation in <code>C:\Program Files\</code>.
                             <br><span class="description-jp"><strong>⚠️ 必要条件:</strong> 公式サイトからMSIインストーラーを使用してAffinity Designerをインストールし、<code>C:\Program Files\</code>への適切なインストールを確保してください。</span>
                         </div>
+                        <div class="code-example">
+                            <h4>Installation Commands / インストールコマンド:</h4>
+                            <pre><code># Clone the repository / リポジトリをクローン
+git clone https://github.com/szgk/mcp-affinity-designer.git
+cd mcp-affinity-designer
+
+# Install dependencies / 依存関係をインストール
+npm install
+
+# Build the project / プロジェクトをビルド
+npm run build</code></pre>
+                        </div>
                         <ol>
-                            <li>Install the npm package</li>
+                            <li>Clone the GitHub repository using the command above</li>
+                            <li>Install dependencies with npm install</li>
+                            <li>Build the project with npm run build</li>
                             <li>Configure your MCP client</li>
                             <li>Verify Affinity Designer is installed</li>
                             <li>Configure custom paths in <code>affinity-install-paths.json</code> if needed</li>

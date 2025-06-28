@@ -94,14 +94,27 @@ Affinity Designerが非標準の場所にインストールされている場合
 - The server will try each path in order until it finds a valid installation / サーバーは有効なインストールが見つかるまで各パスを順番に試行します
 
 ## Installation
+## インストール
+
+### GitHub Repository Clone Method / GitHubリポジトリクローン方法
 
 ```bash
-npm install mcp-affinity-designer
+# Clone the repository / リポジトリをクローン
+git clone https://github.com/szgk/mcp-affinity-designer.git
+cd mcp-affinity-designer
+
+# Install dependencies / 依存関係をインストール
+npm install
+
+# Build the project / プロジェクトをビルド
+npm run build
 ```
 
 ## Usage
+## 使用方法
 
 Configure your MCP client to use this server:
+MCPクライアントがこのサーバーを使用するよう設定してください：
 
 ```json
 {
