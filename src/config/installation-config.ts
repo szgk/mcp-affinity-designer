@@ -26,19 +26,62 @@ interface AffinityInstallPathsJson {
 }
 
 /**
+ * Check if running in WSL (Windows Subsystem for Linux)
+ * WSL（Windows Subsystem for Linux）で実行中かチェック
+ */
+function isWSL(): boolean {
+  try {
+    if (process.platform !== 'linux') {
+      return false;
+    }
+    // Check for WSL version file or WSL environment
+    // WSLバージョンファイルまたはWSL環境をチェック
+    return fs.existsSync('/proc/version') && 
+           fs.readFileSync('/proc/version', 'utf8').toLowerCase().includes('microsoft');
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Convert Windows path to WSL path
+ * WindowsパスをWSLパスに変換
+ */
+function convertWindowsPathToWSL(windowsPath: string): string {
+  if (!windowsPath || typeof windowsPath !== 'string') {
+    return windowsPath;
+  }
+  
+  // Convert C:\ to /mnt/c/, D:\ to /mnt/d/, etc.
+  // C:\を/mnt/c/に、D:\を/mnt/d/に変換など
+  const driveRegex = /^([A-Za-z]):\\/;
+  const match = windowsPath.match(driveRegex);
+  
+  if (match) {
+    const driveLetter = match[1].toLowerCase();
+    const pathWithoutDrive = windowsPath.substring(3); // Remove "C:\"
+    const unixPath = pathWithoutDrive.replace(/\\/g, '/');
+    return `/mnt/${driveLetter}/${unixPath}`;
+  }
+  
+  return windowsPath;
+}
+
+/**
  * Load affinity install paths from JSON file
  * JSONファイルからAffinityインストールパスを読み込み
  */
 function loadAffinityInstallPaths(): { windows: string[]; macos: string[] } {
+  let windowsPaths: string[] = [];
+  let macOSPaths: string[] = [];
+  
   try {
     const jsonPath = path.join(__dirname, '..', '..', 'affinity-install-paths.json');
     if (fs.existsSync(jsonPath)) {
       const jsonData = fs.readFileSync(jsonPath, 'utf8');
       const installPaths: AffinityInstallPathsJson = JSON.parse(jsonData);
-      return {
-        windows: installPaths.windows.affinityInstallPaths || [],
-        macos: installPaths.macos.affinityInstallPaths || []
-      };
+      windowsPaths = installPaths.windows.affinityInstallPaths || [];
+      macOSPaths = installPaths.macos.affinityInstallPaths || [];
     }
   } catch (error) {
     // eslint-disable-next-line no-console
@@ -49,18 +92,36 @@ function loadAffinityInstallPaths(): { windows: string[]; macos: string[] } {
   
   // Fallback to hardcoded defaults if JSON loading fails
   // JSON読み込み失敗時はハードコードされたデフォルトにフォールバック
-  return {
-    windows: [
+  if (windowsPaths.length === 0) {
+    windowsPaths = [
       'C:\\Program Files\\Affinity\\Designer 2\\Designer.exe',
       'C:\\Program Files\\Affinity\\Affinity Designer 2\\Affinity Designer 2.exe',
       'C:\\Program Files (x86)\\Affinity\\Affinity Designer 2\\Affinity Designer 2.exe',
       'C:\\Program Files\\Affinity\\Affinity Designer\\Affinity Designer.exe',
       'C:\\Program Files (x86)\\Affinity\\Affinity Designer\\Affinity Designer.exe'
-    ],
-    macos: [
+    ];
+  }
+  
+  if (macOSPaths.length === 0) {
+    macOSPaths = [
       '/Applications/Affinity Designer 2.app/Contents/MacOS/Affinity Designer 2',
       '/Applications/Affinity Designer.app/Contents/MacOS/Affinity Designer'
-    ]
+    ];
+  }
+  
+  // If running in WSL, add converted WSL paths for Windows installations
+  // WSLで実行中の場合、Windows インストール用の変換されたWSLパスを追加
+  if (isWSL()) {
+    const wslPaths = windowsPaths.map(convertWindowsPathToWSL);
+    return {
+      windows: [...windowsPaths, ...wslPaths],
+      macos: macOSPaths
+    };
+  }
+  
+  return {
+    windows: windowsPaths,
+    macos: macOSPaths
   };
 }
 
