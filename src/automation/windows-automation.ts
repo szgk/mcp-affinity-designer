@@ -227,22 +227,39 @@ export class WindowsUIAutomation {
    */
   static async sendKeyboardShortcut(keys: string): Promise<AutomationResult> {
     try {
+      // Escape special characters for SendKeys / SendKeys用に特殊文字をエスケープ
+      const escapedKeys = this.escapeKeysForSendKeys(keys);
+      
       const command = `
         Add-Type -AssemblyName System.Windows.Forms
-        [System.Windows.Forms.SendKeys]::SendWait("${keys}")
+        try {
+          [System.Windows.Forms.SendKeys]::SendWait("${escapedKeys}")
+          Write-Output "SUCCESS"
+        } catch {
+          Write-Output "ERROR: $($_.Exception.Message)"
+        }
       `;
       
-      await execAsync(`powershell -Command "${command}"`);
+      const result = await execAsync(`powershell -NoProfile -Command "${command}"`);
       
-      // Small delay after sending keys / キー送信後の小さな遅延
-      await this.delay(500);
-      
-      return {
-        success: true,
-        message: `Keyboard shortcut sent: ${keys}`,
-        messageJP: `キーボードショートカットを送信: ${keys}`,
-        data: { keys }
-      };
+      if (result.stdout.trim().startsWith('SUCCESS')) {
+        // Small delay after sending keys / キー送信後の小さな遅延
+        await this.delay(200);
+        
+        return {
+          success: true,
+          message: `Keyboard shortcut sent successfully: ${keys}`,
+          messageJP: `キーボードショートカットの送信に成功: ${keys}`,
+          data: { keys, escaped: escapedKeys }
+        };
+      } else {
+        return {
+          success: false,
+          message: `PowerShell execution failed: ${result.stdout.trim()}`,
+          messageJP: `PowerShell実行に失敗: ${result.stdout.trim()}`,
+          error: result.stdout.trim()
+        };
+      }
       
     } catch (error) {
       return {
@@ -255,51 +272,139 @@ export class WindowsUIAutomation {
   }
 
   /**
+   * Escape special characters for SendKeys
+   * SendKeys用の特殊文字をエスケープ
+   */
+  private static escapeKeysForSendKeys(keys: string): string {
+    // Handle special key combinations / 特殊キーの組み合わせを処理
+    return keys
+      .replace(/\+/g, '{+}')
+      .replace(/\^/g, '{^}')
+      .replace(/%/g, '{%}')
+      .replace(/~/g, '{~}')
+      .replace(/\(/g, '{(}')
+      .replace(/\)/g, '{)}')
+      .replace(/\[/g, '{[}')
+      .replace(/\]/g, '{]}');
+  }
+
+  /**
    * Focus Affinity Designer window
    * Affinity Designerウィンドウにフォーカス
    */
   static async focusAffinityWindow(): Promise<AutomationResult> {
     try {
       const processes = await WindowsProcessManager.findAffinityProcesses();
-      const activeProcess = processes.find(p => p.windowTitle && p.windowHandle);
+      const validProcesses = processes.filter(p => 
+        p.windowTitle && 
+        p.windowHandle && 
+        String(p.windowHandle) !== '0'
+      );
       
-      if (!activeProcess || !activeProcess.windowHandle) {
+      if (validProcesses.length === 0) {
         return {
           success: false,
           message: 'No active Affinity Designer window found',
           messageJP: 'アクティブなAffinity Designerウィンドウが見つかりません',
-          error: 'No window to focus'
+          error: 'No valid window handle available'
         };
       }
+
+      // Try the first valid process / 最初の有効なプロセスを試行
+      const targetProcess = validProcesses[0];
       
       const command = `
-        Add-Type -TypeDefinition 'using System; using System.Runtime.InteropServices; public class Win32 {
-          [DllImport("user32.dll")] public static extern bool SetForegroundWindow(IntPtr hWnd);
-          [DllImport("user32.dll")] public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
-        }'
-        $hwnd = [IntPtr]${activeProcess.windowHandle}
-        [Win32]::ShowWindow($hwnd, 9)
-        [Win32]::SetForegroundWindow($hwnd)
+        Add-Type @'
+          using System;
+          using System.Runtime.InteropServices;
+          public class Win32 {
+            [DllImport("user32.dll")] 
+            public static extern bool SetForegroundWindow(IntPtr hWnd);
+            [DllImport("user32.dll")] 
+            public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
+            [DllImport("user32.dll")] 
+            public static extern bool IsWindow(IntPtr hWnd);
+            [DllImport("user32.dll")] 
+            public static extern IntPtr GetForegroundWindow();
+          }
+'@
+        $hwnd = [IntPtr]${targetProcess.windowHandle}
+        
+        # Verify window handle is valid / ウィンドウハンドルが有効か検証
+        if ([Win32]::IsWindow($hwnd)) {
+          # First show the window / まずウィンドウを表示
+          [Win32]::ShowWindow($hwnd, 9)  # SW_RESTORE
+          Start-Sleep -Milliseconds 100
+          
+          # Then bring to foreground / 次に前面に持ってくる
+          [Win32]::SetForegroundWindow($hwnd)
+          Start-Sleep -Milliseconds 100
+          
+          # Verify focus was acquired / フォーカスが取得されたか検証
+          $fg = [Win32]::GetForegroundWindow()
+          if ($fg -eq $hwnd) {
+            Write-Output "SUCCESS"
+          } else {
+            Write-Output "FOCUS_FAILED"
+          }
+        } else {
+          Write-Output "INVALID_HANDLE"
+        }
       `;
       
-      await execAsync(`powershell -Command "${command}"`);
+      const result = await execAsync(`powershell -NoProfile -Command "${command}"`);
+      const output = result.stdout.trim();
       
-      return {
-        success: true,
-        message: 'Affinity Designer window focused',
-        messageJP: 'Affinity Designerウィンドウにフォーカスしました',
-        data: {
-          processId: activeProcess.id,
-          windowTitle: activeProcess.windowTitle
-        }
-      };
+      if (output === 'SUCCESS') {
+        // Additional delay to ensure window is ready / ウィンドウが準備できたことを確認するための追加遅延
+        await this.delay(300);
+        
+        return {
+          success: true,
+          message: 'Affinity Designer window focused successfully',
+          messageJP: 'Affinity Designerウィンドウのフォーカスに成功',
+          data: { 
+            windowHandle: targetProcess.windowHandle,
+            windowTitle: targetProcess.windowTitle,
+            processId: targetProcess.id
+          }
+        };
+      } else {
+        return {
+          success: false,
+          message: `Failed to focus window: ${output}`,
+          messageJP: `ウィンドウフォーカスに失敗: ${output}`,
+          error: `PowerShell returned: ${output}`
+        };
+      }
       
     } catch (error) {
       return {
         success: false,
-        message: 'Failed to focus Affinity Designer window',
-        messageJP: 'Affinity Designerウィンドウのフォーカスに失敗',
+        message: 'Exception occurred while focusing window',
+        messageJP: 'ウィンドウフォーカス中に例外が発生',
         error: error instanceof Error ? error.message : String(error)
+      };
+    }
+  }
+
+  /**
+   * Execute PowerShell command with improved error handling
+   * 改善されたエラーハンドリングでPowerShellコマンドを実行
+   */
+  static async executeCommand(command: string): Promise<{ stdout: string; stderr: string; success: boolean }> {
+    try {
+      const result = await execAsync(`powershell -NoProfile -Command "${command}"`);
+      return {
+        stdout: result.stdout,
+        stderr: result.stderr,
+        success: true
+      };
+    } catch (error) {
+      return {
+        stdout: '',
+        stderr: error instanceof Error ? error.message : String(error),
+        success: false
       };
     }
   }
