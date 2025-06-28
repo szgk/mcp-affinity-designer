@@ -414,3 +414,61 @@ mark {
     padding: 0.1em 0.2em;
     border-radius: 0.2em;
 }
+
+/* Configuration Section Styles */
+.config-info {
+    background: #f7fafc;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin: 1rem 0;
+    border-left: 4px solid #4299e1;
+}
+
+.config-description,
+.config-description-jp {
+    margin: 0.5rem 0;
+    line-height: 1.6;
+}
+
+.config-description-jp {
+    color: #4a5568;
+    font-size: 0.95rem;
+}
+
+.config-notes {
+    background: #fffaf0;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin: 1rem 0;
+    border-left: 4px solid #ed8936;
+}
+
+.config-notes h4 {
+    color: #744210;
+    margin: 0 0 0.75rem 0;
+    font-size: 1rem;
+}
+
+.config-notes ul {
+    margin: 0.5rem 0;
+    padding-left: 1.5rem;
+}
+
+.config-notes ul.notes-jp {
+    margin-top: 1rem;
+    color: #4a5568;
+    font-size: 0.95rem;
+}
+
+.config-notes li {
+    margin: 0.5rem 0;
+    line-height: 1.5;
+}
+
+.config-notes code {
+    background: #fed7d7;
+    color: #9c4221;
+    padding: 0.2rem 0.4rem;
+    border-radius: 0.25rem;
+    font-size: 0.85rem;
+}

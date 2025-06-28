@@ -13,6 +13,58 @@ import * as path from 'path';
 import * as os from 'os';
 
 /**
+ * Interface for affinity install paths JSON structure
+ * AffinityインストールパスJSON構造のインターフェース
+ */
+interface AffinityInstallPathsJson {
+  windows: {
+    affinityInstallPaths: string[];
+  };
+  macos: {
+    affinityInstallPaths: string[];
+  };
+}
+
+/**
+ * Load affinity install paths from JSON file
+ * JSONファイルからAffinityインストールパスを読み込み
+ */
+function loadAffinityInstallPaths(): { windows: string[]; macos: string[] } {
+  try {
+    const jsonPath = path.join(__dirname, '..', '..', 'affinity-install-paths.json');
+    if (fs.existsSync(jsonPath)) {
+      const jsonData = fs.readFileSync(jsonPath, 'utf8');
+      const installPaths: AffinityInstallPathsJson = JSON.parse(jsonData);
+      return {
+        windows: installPaths.windows.affinityInstallPaths || [],
+        macos: installPaths.macos.affinityInstallPaths || []
+      };
+    }
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.warn('Failed to load affinity install paths from JSON, using defaults:', error);
+    // eslint-disable-next-line no-console
+    console.warn('JSONからAffinityインストールパスの読み込みに失敗、デフォルトを使用:', error);
+  }
+  
+  // Fallback to hardcoded defaults if JSON loading fails
+  // JSON読み込み失敗時はハードコードされたデフォルトにフォールバック
+  return {
+    windows: [
+      'C:\\Program Files\\Affinity\\Designer 2\\Designer.exe',
+      'C:\\Program Files\\Affinity\\Affinity Designer 2\\Affinity Designer 2.exe',
+      'C:\\Program Files (x86)\\Affinity\\Affinity Designer 2\\Affinity Designer 2.exe',
+      'C:\\Program Files\\Affinity\\Affinity Designer\\Affinity Designer.exe',
+      'C:\\Program Files (x86)\\Affinity\\Affinity Designer\\Affinity Designer.exe'
+    ],
+    macos: [
+      '/Applications/Affinity Designer 2.app/Contents/MacOS/Affinity Designer 2',
+      '/Applications/Affinity Designer.app/Contents/MacOS/Affinity Designer'
+    ]
+  };
+}
+
+/**
  * Configuration interface for installation settings
  * インストール設定用設定インターフェース
  */
@@ -33,13 +85,10 @@ export interface InstallationConfig {
  * Default configuration for Windows systems
  * Windowsシステム用デフォルト設定
  */
-const DEFAULT_WINDOWS_CONFIG: InstallationConfig = {
-  affinityInstallPaths: [
-    'C:\\Program Files\\Affinity\\Affinity Designer 2\\Affinity Designer 2.exe',
-    'C:\\Program Files (x86)\\Affinity\\Affinity Designer 2\\Affinity Designer 2.exe',
-    'C:\\Program Files\\Affinity\\Affinity Designer\\Affinity Designer.exe',
-    'C:\\Program Files (x86)\\Affinity\\Affinity Designer\\Affinity Designer.exe'
-  ],
+function createDefaultWindowsConfig(): InstallationConfig {
+  const installPaths = loadAffinityInstallPaths();
+  return {
+    affinityInstallPaths: installPaths.windows,
   documentSearchPaths: [
     path.join(os.homedir(), 'Documents'),
     path.join(os.homedir(), 'Desktop'),
@@ -57,19 +106,19 @@ const DEFAULT_WINDOWS_CONFIG: InstallationConfig = {
     'AffinityDesigner*',
     'Designer*'
   ],
-  retryAttempts: 3,
-  platform: 'win32'
-};
+    retryAttempts: 3,
+    platform: 'win32'
+  };
+}
 
 /**
  * Default configuration for macOS systems (placeholder for future implementation)
  * macOSシステム用デフォルト設定（将来の実装用プレースホルダー）
  */
-const DEFAULT_MACOS_CONFIG: InstallationConfig = {
-  affinityInstallPaths: [
-    '/Applications/Affinity Designer 2.app/Contents/MacOS/Affinity Designer 2',
-    '/Applications/Affinity Designer.app/Contents/MacOS/Affinity Designer'
-  ],
+function createDefaultMacOSConfig(): InstallationConfig {
+  const installPaths = loadAffinityInstallPaths();
+  return {
+    affinityInstallPaths: installPaths.macos,
   documentSearchPaths: [
     path.join(os.homedir(), 'Documents'),
     path.join(os.homedir(), 'Desktop'),
@@ -84,9 +133,10 @@ const DEFAULT_MACOS_CONFIG: InstallationConfig = {
     'Affinity Designer*',
     'Designer*'
   ],
-  retryAttempts: 3,
-  platform: 'darwin'
-};
+    retryAttempts: 3,
+    platform: 'darwin'
+  };
+}
 
 /**
  * Configuration Manager for Installation Settings
@@ -118,13 +168,15 @@ export class InstallationConfigManager {
   private getDefaultConfig(): InstallationConfig {
     switch (process.platform) {
       case 'win32':
-        return DEFAULT_WINDOWS_CONFIG;
+        return createDefaultWindowsConfig();
       case 'darwin':
-        return DEFAULT_MACOS_CONFIG;
-      default:
+        return createDefaultMacOSConfig();
+      default: {
         // Fallback to Windows config for unsupported platforms
         // サポートされていないプラットフォームではWindows設定にフォールバック
-        return { ...DEFAULT_WINDOWS_CONFIG, platform: process.platform };
+        const fallbackConfig = createDefaultWindowsConfig();
+        return { ...fallbackConfig, platform: process.platform };
+      }
     }
   }
 
@@ -389,5 +441,27 @@ export class InstallationConfigManager {
     }
 
     return detectedPaths;
+  }
+
+  /**
+   * Reload affinity install paths from JSON file
+   * JSONファイルからAffinityインストールパスを再読み込み
+   */
+  reloadAffinityInstallPaths(): boolean {
+    try {
+      const installPaths = loadAffinityInstallPaths();
+      const platformPaths = process.platform === 'win32' ? installPaths.windows : installPaths.macos;
+      
+      this.config = {
+        ...this.config,
+        affinityInstallPaths: platformPaths
+      };
+      
+      return true;
+    } catch (error) {
+      console.error('Failed to reload affinity install paths:', error);
+      console.error('Affinityインストールパスの再読み込みに失敗:', error);
+      return false;
+    }
   }
 }

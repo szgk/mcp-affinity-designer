@@ -108,6 +108,32 @@
             </div>
         </section>
 
+        <section class="section requirements-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">Prerequisites</h2>
+                    <p class="section-subtitle">必要条件</p>
+                </div>
+                <div class="requirements-content">
+                    <div class="requirement-card warning">
+                        <div class="requirement-icon">⚠️</div>
+                        <div class="requirement-content">
+                            <h3 class="requirement-title">Affinity Product Installation Required</h3>
+                            <p class="requirement-title-jp">Affinity製品インストール必須</p>
+                            <p class="requirement-description">
+                                You must install Affinity Designer using the <strong>MSI installer</strong> from the official website. 
+                                This ensures proper installation to <code>C:\Program Files\</code> and creates necessary registry entries for automation.
+                            </p>
+                            <p class="requirement-description-jp">
+                                公式サイトから<strong>MSIインストーラー</strong>を使用してAffinity Designerをインストールする必要があります。
+                                これにより<code>C:\Program Files\</code>への適切なインストールと、自動化に必要なレジストリエントリの作成が保証されます。
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <section id="installation" class="section section-alt">
             <div class="container">
                 <div class="section-header">
@@ -144,6 +170,24 @@
                     </div>
                     <div class="step">
                         <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h3 class="step-title">Configure Installation Paths</h3>
+                            <p class="step-description">インストールパスを設定</p>
+                            <p>If needed, customize Affinity Designer paths in <code>affinity-install-paths.json</code></p>
+                            <p class="description-jp">必要に応じて<code>affinity-install-paths.json</code>でAffinity Designerパスをカスタマイズ</p>
+                            <div class="code-block">
+                                <pre><code>{
+  "windows": {
+    "affinityInstallPaths": [
+      "C:\\Program Files\\Affinity\\Designer 2\\Designer.exe"
+    ]
+  }
+}</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">4</div>
                         <div class="step-content">
                             <h3 class="step-title">Start Using</h3>
                             <p class="step-description">使用開始</p>

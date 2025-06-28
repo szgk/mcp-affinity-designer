@@ -1,0 +1,17 @@
+{
+  "windows": {
+    "affinityInstallPaths": [
+      "C:\\Program Files\\Affinity\\Designer 2\\Designer.exe",
+      "C:\\Program Files\\Affinity\\Affinity Designer 2\\Affinity Designer 2.exe",
+      "C:\\Program Files (x86)\\Affinity\\Affinity Designer 2\\Affinity Designer 2.exe",
+      "C:\\Program Files\\Affinity\\Affinity Designer\\Affinity Designer.exe",
+      "C:\\Program Files (x86)\\Affinity\\Affinity Designer\\Affinity Designer.exe"
+    ]
+  },
+  "macos": {
+    "affinityInstallPaths": [
+      "/Applications/Affinity Designer 2.app/Contents/MacOS/Affinity Designer 2",
+      "/Applications/Affinity Designer.app/Contents/MacOS/Affinity Designer"
+    ]
+  }
+}

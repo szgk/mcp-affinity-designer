@@ -44,10 +44,15 @@
                         <br><span class="description-jp">AIアシスタント用のMCPサーバーのインストールと設定方法を学習。</span>
                     </p>
                     <div class="guide-steps">
+                        <div class="prerequisite-note">
+                            <strong>⚠️ Prerequisites:</strong> Install Affinity Designer using MSI installer from official website to ensure proper installation in <code>C:\Program Files\</code>.
+                            <br><span class="description-jp"><strong>⚠️ 必要条件:</strong> 公式サイトからMSIインストーラーを使用してAffinity Designerをインストールし、<code>C:\Program Files\</code>への適切なインストールを確保してください。</span>
+                        </div>
                         <ol>
                             <li>Install the npm package</li>
                             <li>Configure your MCP client</li>
                             <li>Verify Affinity Designer is installed</li>
+                            <li>Configure custom paths in <code>affinity-install-paths.json</code> if needed</li>
                             <li>Test basic functionality</li>
                         </ol>
                     </div>
@@ -86,6 +91,46 @@
                 </div>
 
                 <div class="guide-card">
+                    <h3 class="guide-title">⚙️ Custom Installation Paths</h3>
+                    <p class="guide-description">
+                        Configure custom Affinity Designer installation paths.
+                        <br><span class="description-jp">カスタムAffinity Designerインストールパスを設定。</span>
+                    </p>
+                    <div class="guide-steps">
+                        <div class="prerequisite-note">
+                            <strong>📝 Configuration File:</strong> Edit <code>affinity-install-paths.json</code> in the project root to add your custom installation paths.
+                            <br><span class="description-jp"><strong>📝 設定ファイル:</strong> プロジェクトルートの<code>affinity-install-paths.json</code>を編集してカスタムインストールパスを追加。</span>
+                        </div>
+                        <div class="code-example">
+                            <h4>Example Configuration / 設定例:</h4>
+                            <pre><code>{
+  "windows": {
+    "affinityInstallPaths": [
+      "C:\\Program Files\\Affinity\\Designer 2\\Designer.exe",
+      "C:\\Program Files\\Affinity\\Affinity Designer 2\\Affinity Designer 2.exe",
+      "D:\\Custom\\Affinity Designer\\Designer.exe"
+    ]
+  },
+  "macos": {
+    "affinityInstallPaths": [
+      "/Applications/Affinity Designer 2.app/Contents/MacOS/Affinity Designer 2",
+      "/Applications/Affinity Designer.app/Contents/MacOS/Affinity Designer",
+      "/Custom/Path/Affinity Designer.app/Contents/MacOS/Affinity Designer"
+    ]
+  }
+}</code></pre>
+                        </div>
+                        <ol>
+                            <li><strong>Locate the JSON file</strong> in your project root directory</li>
+                            <li><strong>Add your custom path</strong> to the appropriate platform section</li>
+                            <li><strong>Use full executable paths</strong> (including .exe on Windows)</li>
+                            <li><strong>Use double backslashes</strong> for Windows paths</li>
+                            <li><strong>Save and restart</strong> your MCP server</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <div class="guide-card">
                     <h3 class="guide-title">🔧 Troubleshooting</h3>
                     <p class="guide-description">
                         Common issues and solutions for smooth operation.
@@ -97,6 +142,7 @@
                             <li>Window focus issues</li>
                             <li>Keyboard shortcut conflicts</li>
                             <li>Performance optimization</li>
+                            <li>Custom installation path not working</li>
                         </ol>
                     </div>
                 </div>

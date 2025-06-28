@@ -38,6 +38,13 @@
                         </div>
                         <div class="api-nav">
                             <div class="nav-section">
+                                <h4 class="nav-section-title">Configuration</h4>
+                                <ul class="nav-list">
+                                    <li><a href="#installation-paths" class="nav-item">Installation Paths</a></li>
+                                    <li><a href="#get_server_info" class="nav-item">get_server_info</a></li>
+                                </ul>
+                            </div>
+                            <div class="nav-section">
                                 <h4 class="nav-section-title">Application Management</h4>
                                 <ul class="nav-list">
                                     <li><a href="#affinity_get_status" class="nav-item">affinity_get_status</a></li>
@@ -98,6 +105,62 @@
                             <br><span class="description-jp">Affinity Designerサーバーで利用可能な全MCPツールの完全なリファレンス。</span>
                         </p>
                     </div>
+
+                    <!-- Configuration Section -->
+                    <section id="installation-paths" class="api-section">
+                        <h2 class="section-title">Installation Paths Configuration</h2>
+                        <p class="section-subtitle">インストールパス設定</p>
+                        
+                        <div class="config-info">
+                            <p class="config-description">
+                                The MCP server uses <code>affinity-install-paths.json</code> to locate Affinity Designer installations. 
+                                This file should be placed in the project root directory.
+                            </p>
+                            <p class="config-description-jp">
+                                MCPサーバーは<code>affinity-install-paths.json</code>を使用してAffinity Designerのインストールを特定します。
+                                このファイルはプロジェクトルートディレクトリに配置する必要があります。
+                            </p>
+                        </div>
+
+                        <div class="code-example">
+                            <h4>Configuration File Structure / 設定ファイル構造:</h4>
+                            <pre><code>{
+  "windows": {
+    "affinityInstallPaths": [
+      "C:\\Program Files\\Affinity\\Designer 2\\Designer.exe",
+      "C:\\Program Files\\Affinity\\Affinity Designer 2\\Affinity Designer 2.exe",
+      "C:\\Program Files (x86)\\Affinity\\Affinity Designer 2\\Affinity Designer 2.exe",
+      "C:\\Program Files\\Affinity\\Affinity Designer\\Affinity Designer.exe",
+      "C:\\Program Files (x86)\\Affinity\\Affinity Designer\\Affinity Designer.exe"
+    ]
+  },
+  "macos": {
+    "affinityInstallPaths": [
+      "/Applications/Affinity Designer 2.app/Contents/MacOS/Affinity Designer 2",
+      "/Applications/Affinity Designer.app/Contents/MacOS/Affinity Designer"
+    ]
+  }
+}</code></pre>
+                        </div>
+
+                        <div class="config-notes">
+                            <h4>Configuration Notes / 設定に関する注意事項:</h4>
+                            <ul>
+                                <li><strong>Path Priority:</strong> The server tries paths in order until a valid installation is found</li>
+                                <li><strong>Platform Specific:</strong> Only the appropriate platform section is used</li>
+                                <li><strong>Full Paths Required:</strong> Always provide complete paths to the executable</li>
+                                <li><strong>Windows Path Format:</strong> Use double backslashes (<code>\\</code>) for Windows paths</li>
+                                <li><strong>Hot Reload:</strong> Restart the MCP server after editing the configuration</li>
+                            </ul>
+                            <ul class="notes-jp">
+                                <li><strong>パス優先度:</strong> サーバーは有効なインストールが見つかるまでパスを順番に試行</li>
+                                <li><strong>プラットフォーム固有:</strong> 該当するプラットフォームセクションのみが使用されます</li>
+                                <li><strong>フルパス必須:</strong> 実行ファイルへの完全なパスを必ず提供してください</li>
+                                <li><strong>Windowsパス形式:</strong> Windowsパスには二重バックスラッシュ（<code>\\</code>）を使用</li>
+                                <li><strong>ホットリロード:</strong> 設定編集後はMCPサーバーを再起動してください</li>
+                            </ul>
+                        </div>
+                    </section>
 
                     <div id="search-results" class="search-results"></div>
 

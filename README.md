@@ -49,6 +49,50 @@ macOS環境を持つ協力者を募集して以下の実装をお手伝いいた
 If you have macOS and Affinity Designer, please see our [macOS support issue](https://github.com/szgk/mcp-affinity-designer/issues/6) for ways to contribute!
 macOSとAffinity Designerをお持ちの方は、協力方法について[macOSサポートissue](https://github.com/szgk/mcp-affinity-designer/issues/6)をご覧ください！
 
+## Prerequisites / 必要条件
+
+### Affinity Product Installation Requirements
+### Affinity製品インストール要件
+
+**⚠️ IMPORTANT: MSI Installation Required**
+**⚠️ 重要：MSIインストールが必要**
+
+To use this MCP server with Affinity Designer, you must install Affinity products using the **MSI installer** from the official website. This ensures the application is installed to `C:\Program Files\` and creates the necessary registry entries for automation.
+
+このMCPサーバーをAffinity Designerと使用するには、公式サイトから**MSIインストーラー**を使用してAffinity製品をインストールする必要があります。これにより、アプリケーションが`C:\Program Files\`にインストールされ、自動化に必要なレジストリエントリが作成されます。
+
+### Custom Installation Paths Configuration
+### カスタムインストールパス設定
+
+If your Affinity Designer is installed in a non-standard location, you can customize the installation paths by editing the `affinity-install-paths.json` file in the project root:
+
+Affinity Designerが非標準の場所にインストールされている場合、プロジェクトルートの`affinity-install-paths.json`ファイルを編集してインストールパスをカスタマイズできます：
+
+```json
+{
+  "windows": {
+    "affinityInstallPaths": [
+      "C:\\Program Files\\Affinity\\Designer 2\\Designer.exe",
+      "C:\\Program Files\\Affinity\\Affinity Designer 2\\Affinity Designer 2.exe",
+      "C:\\Custom\\Path\\To\\Affinity Designer.exe"
+    ]
+  },
+  "macos": {
+    "affinityInstallPaths": [
+      "/Applications/Affinity Designer 2.app/Contents/MacOS/Affinity Designer 2",
+      "/Applications/Affinity Designer.app/Contents/MacOS/Affinity Designer",
+      "/Custom/Path/To/Affinity Designer.app/Contents/MacOS/Affinity Designer"
+    ]
+  }
+}
+```
+
+**Important Notes / 重要な注意事項:**
+- Add your custom paths to the appropriate platform section / カスタムパスを適切なプラットフォームセクションに追加してください
+- Use full paths to the executable file / 実行ファイルへのフルパスを使用してください
+- On Windows, use double backslashes (`\\`) for path separators / Windowsでは、パス区切り文字に二重バックスラッシュ（`\\`）を使用してください
+- The server will try each path in order until it finds a valid installation / サーバーは有効なインストールが見つかるまで各パスを順番に試行します
+
 ## Installation
 
 ```bash
