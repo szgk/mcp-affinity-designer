@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Examples - MCP Affinity Designer Server</title>
+    <link rel="stylesheet" href="../assets/style.css">
+    <link rel="stylesheet" href="examples-style.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <h1 class="logo">
+                    <a href="../" style="color: white; text-decoration: none;">
+                        <span class="logo-icon">🎨</span>
+                        MCP Affinity Designer Server
+                    </a>
+                </h1>
+                <nav class="nav">
+                    <a href="../" class="nav-link">Home</a>
+                    <a href="../api/" class="nav-link">API Reference</a>
+                    <a href="../guides/" class="nav-link">Guides</a>
+                    <a href="https://github.com/szgk/mcp-affinity-designer" class="nav-link">GitHub</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="container">
+            <div class="examples-header">
+                <h1 class="examples-title">Examples & Use Cases</h1>
+                <p class="examples-description">
+                    Real-world examples showing how to use the MCP Affinity Designer server with AI assistants.
+                    <br><span class="description-jp">AIアシスタントでMCP Affinity Designerサーバーを使用する実世界の例。</span>
+                </p>
+            </div>
+
+            <div class="examples-filter">
+                <button class="filter-btn active" data-category="all">All Examples</button>
+                <button class="filter-btn" data-category="basic">Basic Operations</button>
+                <button class="filter-btn" data-category="workflow">Workflows</button>
+                <button class="filter-btn" data-category="automation">Automation</button>
+            </div>
+
+            <div class="examples-grid">
+                <!-- Basic Document Creation -->
+                <div class="example-card" data-category="basic">
+                    <div class="example-header">
+                        <h3 class="example-title">Basic Document Creation</h3>
+                        <span class="example-difficulty easy">Easy</span>
+                    </div>
+                    <p class="example-description">
+                        Create a new document and add basic elements.
+                        <br><span class="description-jp">新しいドキュメントを作成して基本要素を追加。</span>
+                    </p>
+                    <div class="example-code">
+                        <h4>AI Conversation Example:</h4>
+                        <div class="conversation">
+                            <div class="message user">
+                                <strong>You:</strong> Create a new 1920x1080 document in Affinity Designer
+                            </div>
+                            <div class="message assistant">
+                                <strong>Assistant:</strong> I'll create a new Full HD document for you.
+                            </div>
+                            <div class="message user">
+                                <strong>You:</strong> Add a text that says "Welcome" with font size 48
+                            </div>
+                            <div class="message assistant">
+                                <strong>Assistant:</strong> I've added the "Welcome" text with 48pt font size to your document.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="example-result">
+                        <h4>Behind the Scenes:</h4>
+                        <div class="code-block">
+                            <pre><code>// Tools used:
+1. affinity_new_document({ width: 1920, height: 1080 })
+2. affinity_add_text({ text: "Welcome", fontSize: 48 })</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Layer Management Workflow -->
+                <div class="example-card" data-category="workflow">
+                    <div class="example-header">
+                        <h3 class="example-title">Layer Management Workflow</h3>
+                        <span class="example-difficulty medium">Medium</span>
+                    </div>
+                    <p class="example-description">
+                        Organize your design with layers and groups.
+                        <br><span class="description-jp">レイヤーとグループでデザインを整理。</span>
+                    </p>
+                    <div class="example-code">
+                        <h4>AI Conversation Example:</h4>
+                        <div class="conversation">
+                            <div class="message user">
+                                <strong>You:</strong> Create a background layer and a text layer for a logo design
+                            </div>
+                            <div class="message assistant">
+                                <strong>Assistant:</strong> I'll set up a proper layer structure for your logo design.
+                            </div>
+                            <div class="message user">
+                                <strong>You:</strong> Rename the current layer to "Logo Text" and create a new layer called "Background"
+                            </div>
+                            <div class="message assistant">
+                                <strong>Assistant:</strong> Done! I've renamed the layer to "Logo Text" and created a "Background" layer.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="example-result">
+                        <h4>Layer Structure Created:</h4>
+                        <div class="code-block">
+                            <pre><code>// Layer operations:
+1. affinity_create_layer({ name: "Background", type: "standard" })
+2. affinity_rename_layer({ name: "Logo Text" })
+3. affinity_list_layers() // To view layer panel</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Logo Design Automation -->
+                <div class="example-card" data-category="automation">
+                    <div class="example-header">
+                        <h3 class="example-title">Automated Logo Design</h3>
+                        <span class="example-difficulty advanced">Advanced</span>
+                    </div>
+                    <p class="example-description">
+                        Create a complete logo with text, shapes, and effects.
+                        <br><span class="description-jp">テキスト、図形、エフェクトで完全なロゴを作成。</span>
+                    </p>
+                    <div class="example-code">
+                        <h4>AI Conversation Example:</h4>
+                        <div class="conversation">
+                            <div class="message user">
+                                <strong>You:</strong> Create a modern logo for "TechCorp" with a blue circle background and white text, then add a drop shadow effect
+                            </div>
+                            <div class="message assistant">
+                                <strong>Assistant:</strong> I'll create a professional logo design for TechCorp with the specifications you mentioned.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="example-result">
+                        <h4>Complete Workflow:</h4>
+                        <div class="code-block">
+                            <pre><code>// Full logo creation process:
+1. affinity_new_document({ width: 800, height: 600 })
+2. affinity_create_layer({ name: "Background", type: "standard" })
+3. affinity_select_tool({ tool: "ellipse" })
+4. affinity_create_shape({ shape: "ellipse", width: 200, height: 200 })
+5. affinity_create_layer({ name: "Text Layer" })
+6. affinity_add_text({ text: "TechCorp", fontSize: 36 })
+7. affinity_apply_effect({ effect: "drop_shadow", intensity: 0.7 })
+8. affinity_export_document({ format: "png", quality: 100 })</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Business Card Template -->
+                <div class="example-card" data-category="workflow">
+                    <div class="example-header">
+                        <h3 class="example-title">Business Card Template</h3>
+                        <span class="example-difficulty medium">Medium</span>
+                    </div>
+                    <p class="example-description">
+                        Create a professional business card layout.
+                        <br><span class="description-jp">プロフェッショナルな名刺レイアウトを作成。</span>
+                    </p>
+                    <div class="example-code">
+                        <h4>AI Conversation Example:</h4>
+                        <div class="conversation">
+                            <div class="message user">
+                                <strong>You:</strong> Create a business card template that's 3.5x2 inches with my name "John Smith" and title "Design Director"
+                            </div>
+                            <div class="message assistant">
+                                <strong>Assistant:</strong> I'll create a professional business card template with the standard dimensions and your information.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="example-result">
+                        <h4>Business Card Setup:</h4>
+                        <div class="code-block">
+                            <pre><code>// Business card creation:
+1. affinity_new_document({ width: 3.5, height: 2, units: "in" })
+2. affinity_create_layer({ name: "Name Layer" })
+3. affinity_add_text({ text: "John Smith", fontSize: 24 })
+4. affinity_create_layer({ name: "Title Layer" })
+5. affinity_add_text({ text: "Design Director", fontSize: 14 })
+6. affinity_export_document({ format: "pdf", quality: 100 })</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Batch Processing -->
+                <div class="example-card" data-category="automation">
+                    <div class="example-header">
+                        <h3 class="example-title">Batch Export Processing</h3>
+                        <span class="example-difficulty advanced">Advanced</span>
+                    </div>
+                    <p class="example-description">
+                        Export multiple formats for web and print.
+                        <br><span class="description-jp">ウェブと印刷用の複数形式でエクスポート。</span>
+                    </p>
+                    <div class="example-code">
+                        <h4>AI Conversation Example:</h4>
+                        <div class="conversation">
+                            <div class="message user">
+                                <strong>You:</strong> Export this logo in PNG for web, PDF for print, and SVG for scalability
+                            </div>
+                            <div class="message assistant">
+                                <strong>Assistant:</strong> I'll export your logo in all three formats for different use cases.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="example-result">
+                        <h4>Multi-Format Export:</h4>
+                        <div class="code-block">
+                            <pre><code>// Batch export process:
+1. affinity_export_document({ format: "png", quality: 100 })
+2. affinity_export_document({ format: "pdf", quality: 100 })
+3. affinity_export_document({ format: "svg" })</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Shape Creation and Manipulation -->
+                <div class="example-card" data-category="basic">
+                    <div class="example-header">
+                        <h3 class="example-title">Shape Creation & Manipulation</h3>
+                        <span class="example-difficulty easy">Easy</span>
+                    </div>
+                    <p class="example-description">
+                        Create and modify basic shapes for your design.
+                        <br><span class="description-jp">デザイン用の基本図形を作成・修正。</span>
+                    </p>
+                    <div class="example-code">
+                        <h4>AI Conversation Example:</h4>
+                        <div class="conversation">
+                            <div class="message user">
+                                <strong>You:</strong> Create a red rectangle, then duplicate it and move the copy 50 pixels to the right
+                            </div>
+                            <div class="message assistant">
+                                <strong>Assistant:</strong> I'll create a rectangle and make a copy positioned 50 pixels to the right.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="example-result">
+                        <h4>Shape Operations:</h4>
+                        <div class="code-block">
+                            <pre><code>// Shape workflow:
+1. affinity_select_tool({ tool: "rectangle" })
+2. affinity_create_shape({ shape: "rectangle", width: 100, height: 80 })
+3. affinity_select_all()
+4. affinity_duplicate_selection({ offsetX: 50, offsetY: 0 })</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Design System Creation -->
+                <div class="example-card" data-category="workflow">
+                    <div class="example-header">
+                        <h3 class="example-title">Design System Components</h3>
+                        <span class="example-difficulty advanced">Advanced</span>
+                    </div>
+                    <p class="example-description">
+                        Create reusable design components and elements.
+                        <br><span class="description-jp">再利用可能なデザインコンポーネントと要素を作成。</span>
+                    </p>
+                    <div class="example-code">
+                        <h4>AI Conversation Example:</h4>
+                        <div class="conversation">
+                            <div class="message user">
+                                <strong>You:</strong> Create a button component with rounded corners, text "Click Me", and organize it in a "UI Components" layer group
+                            </div>
+                            <div class="message assistant">
+                                <strong>Assistant:</strong> I'll create a professional button component and organize it properly in a UI Components layer group.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="example-result">
+                        <h4>Component Structure:</h4>
+                        <div class="code-block">
+                            <pre><code>// Design system workflow:
+1. affinity_create_layer({ name: "UI Components", type: "group" })
+2. affinity_create_layer({ name: "Button Background" })
+3. affinity_create_shape({ shape: "rectangle", width: 120, height: 40 })
+4. affinity_create_layer({ name: "Button Text" })
+5. affinity_add_text({ text: "Click Me", fontSize: 16 })
+6. affinity_apply_effect({ effect: "drop_shadow", intensity: 0.3 })</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Print Layout -->
+                <div class="example-card" data-category="workflow">
+                    <div class="example-header">
+                        <h3 class="example-title">Print Layout Design</h3>
+                        <span class="example-difficulty medium">Medium</span>
+                    </div>
+                    <p class="example-description">
+                        Design layouts optimized for print production.
+                        <br><span class="description-jp">印刷制作に最適化されたレイアウトをデザイン。</span>
+                    </p>
+                    <div class="example-code">
+                        <h4>AI Conversation Example:</h4>
+                        <div class="conversation">
+                            <div class="message user">
+                                <strong>You:</strong> Create an A4 poster layout with a title "Summer Festival" and subtitle "Join us for fun!"
+                            </div>
+                            <div class="message assistant">
+                                <strong>Assistant:</strong> I'll create an A4 poster with proper print dimensions and your festival text.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="example-result">
+                        <h4>Print Layout Setup:</h4>
+                        <div class="code-block">
+                            <pre><code>// A4 poster creation:
+1. affinity_new_document({ width: 210, height: 297, units: "mm" })
+2. affinity_create_layer({ name: "Title Layer" })
+3. affinity_add_text({ text: "Summer Festival", fontSize: 48 })
+4. affinity_create_layer({ name: "Subtitle Layer" })
+5. affinity_add_text({ text: "Join us for fun!", fontSize: 24 })
+6. affinity_export_document({ format: "pdf", quality: 100 })</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="examples-footer">
+                <div class="tips-section">
+                    <h3 class="tips-title">Pro Tips for Using MCP Affinity Designer</h3>
+                    <div class="tips-grid">
+                        <div class="tip">
+                            <h4>🎯 Be Specific</h4>
+                            <p>Provide exact dimensions, colors, and positioning for better results.</p>
+                            <p class="tip-jp">より良い結果のために正確な寸法、色、位置を指定してください。</p>
+                        </div>
+                        <div class="tip">
+                            <h4>📋 Use Layer Names</h4>
+                            <p>Always name your layers descriptively for better organization.</p>
+                            <p class="tip-jp">より良い整理のためレイヤーに説明的な名前を付けてください。</p>
+                        </div>
+                        <div class="tip">
+                            <h4>💾 Save Frequently</h4>
+                            <p>Ask the AI to save your work at regular intervals.</p>
+                            <p class="tip-jp">定期的にAIに作業を保存するよう依頼してください。</p>
+                        </div>
+                        <div class="tip">
+                            <h4>🔄 Export Multiple Formats</h4>
+                            <p>Export in different formats for various use cases (web, print, etc.).</p>
+                            <p class="tip-jp">様々な用途（ウェブ、印刷等）で異なる形式でエクスポートしてください。</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="getting-started">
+                    <h3>Ready to Start?</h3>
+                    <p>Check out our <a href="../guides/">User Guides</a> for step-by-step tutorials, or explore the complete <a href="../api/">API Reference</a>.</p>
+                    <p class="description-jp">ステップバイステップのチュートリアルは<a href="../guides/">User Guides</a>を、完全な<a href="../api/">API Reference</a>をご確認ください。</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="../assets/script.js"></script>
+    <script src="examples-script.js"></script>
+</body>
+</html>

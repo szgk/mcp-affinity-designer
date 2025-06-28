@@ -3,9 +3,12 @@
 
 [![CI](https://github.com/szgk/mcp-affinity-designer/actions/workflows/ci.yml/badge.svg)](https://github.com/szgk/mcp-affinity-designer/actions/workflows/ci.yml)
 [![PR Checks](https://github.com/szgk/mcp-affinity-designer/actions/workflows/pr-checks.yml/badge.svg)](https://github.com/szgk/mcp-affinity-designer/actions/workflows/pr-checks.yml)
+[![Documentation](https://github.com/szgk/mcp-affinity-designer/actions/workflows/docs.yml/badge.svg)](https://szgk.github.io/mcp-affinity-designer/)
 [![Node.js Version](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen)](https://nodejs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0%2B-blue)](https://www.typescriptlang.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+📚 **[Complete Documentation & Examples](https://szgk.github.io/mcp-affinity-designer/)** | **[完全なドキュメントと例](https://szgk.github.io/mcp-affinity-designer/)**
 
 MCP (Model Context Protocol) server for Affinity Designer integration.
 Affinity Designer統合用のMCP（Model Context Protocol）サーバーです。

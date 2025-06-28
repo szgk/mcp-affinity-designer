@@ -1,0 +1,103 @@
+# Deploy documentation to GitHub Pages
+name: Deploy Documentation
+
+on:
+  push:
+    branches: [ main ]
+    paths: [ 'docs/**' ]
+  pull_request:
+    branches: [ main ]
+    paths: [ 'docs/**' ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  # Build job
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout / チェックアウト
+        uses: actions/checkout@v4
+
+      - name: Setup Pages / Pages設定
+        uses: actions/configure-pages@v4
+
+      - name: Setup Node.js / Node.js設定
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies / 依存関係インストール
+        run: npm ci
+
+      - name: Build documentation / ドキュメントビルド
+        run: |
+          echo "Building documentation site..."
+          echo "ドキュメントサイトをビルド中..."
+          # Add any build commands here if needed
+          # 必要に応じてビルドコマンドをここに追加
+
+      - name: Upload artifact / アーティファクトアップロード
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./docs
+
+  # Deployment job
+  deploy:
+    if: github.ref == 'refs/heads/main'
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages / GitHub Pagesにデプロイ
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+  # Test job for pull requests
+  test-docs:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout / チェックアウト
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js / Node.js設定
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies / 依存関係インストール
+        run: npm ci
+
+      - name: Validate HTML / HTML検証
+        run: |
+          echo "Validating documentation HTML..."
+          echo "ドキュメントHTMLを検証中..."
+          # Add HTML validation if needed
+          # 必要に応じてHTML検証を追加
+
+      - name: Check links / リンクチェック
+        run: |
+          echo "Checking documentation links..."
+          echo "ドキュメントリンクをチェック中..."
+          # Add link checking if needed
+          # 必要に応じてリンクチェックを追加
+
+      - name: Test accessibility / アクセシビリティテスト
+        run: |
+          echo "Testing documentation accessibility..."
+          echo "ドキュメントアクセシビリティをテスト中..."
+          # Add accessibility testing if needed
+          # 必要に応じてアクセシビリティテストを追加

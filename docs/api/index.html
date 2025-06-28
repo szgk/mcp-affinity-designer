@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Reference - MCP Affinity Designer Server</title>
+    <link rel="stylesheet" href="../assets/style.css">
+    <link rel="stylesheet" href="api-style.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <h1 class="logo">
+                    <a href="../" style="color: white; text-decoration: none;">
+                        <span class="logo-icon">🎨</span>
+                        MCP Affinity Designer Server
+                    </a>
+                </h1>
+                <nav class="nav">
+                    <a href="../" class="nav-link">Home</a>
+                    <a href="../examples/" class="nav-link">Examples</a>
+                    <a href="../guides/" class="nav-link">Guides</a>
+                    <a href="https://github.com/szgk/mcp-affinity-designer" class="nav-link">GitHub</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="container">
+            <div class="api-layout">
+                <nav class="api-sidebar">
+                    <div class="sidebar-content">
+                        <h3 class="sidebar-title">API Reference</h3>
+                        <div class="search-box">
+                            <input type="text" id="search-input" placeholder="Search tools..." class="search-input">
+                        </div>
+                        <div class="api-nav">
+                            <div class="nav-section">
+                                <h4 class="nav-section-title">Application Management</h4>
+                                <ul class="nav-list">
+                                    <li><a href="#affinity_get_status" class="nav-item">affinity_get_status</a></li>
+                                    <li><a href="#affinity_start_app" class="nav-item">affinity_start_app</a></li>
+                                    <li><a href="#affinity_focus_window" class="nav-item">affinity_focus_window</a></li>
+                                </ul>
+                            </div>
+                            <div class="nav-section">
+                                <h4 class="nav-section-title">Document Operations</h4>
+                                <ul class="nav-list">
+                                    <li><a href="#affinity_new_document" class="nav-item">affinity_new_document</a></li>
+                                    <li><a href="#affinity_save_document" class="nav-item">affinity_save_document</a></li>
+                                    <li><a href="#affinity_export_document" class="nav-item">affinity_export_document</a></li>
+                                    <li><a href="#affinity_close_document" class="nav-item">affinity_close_document</a></li>
+                                    <li><a href="#affinity_discover_documents" class="nav-item">affinity_discover_documents</a></li>
+                                    <li><a href="#affinity_validate_document" class="nav-item">affinity_validate_document</a></li>
+                                </ul>
+                            </div>
+                            <div class="nav-section">
+                                <h4 class="nav-section-title">Layer Management</h4>
+                                <ul class="nav-list">
+                                    <li><a href="#affinity_list_layers" class="nav-item">affinity_list_layers</a></li>
+                                    <li><a href="#affinity_create_layer" class="nav-item">affinity_create_layer</a></li>
+                                    <li><a href="#affinity_delete_layer" class="nav-item">affinity_delete_layer</a></li>
+                                    <li><a href="#affinity_rename_layer" class="nav-item">affinity_rename_layer</a></li>
+                                    <li><a href="#affinity_toggle_layer_visibility" class="nav-item">affinity_toggle_layer_visibility</a></li>
+                                </ul>
+                            </div>
+                            <div class="nav-section">
+                                <h4 class="nav-section-title">Selection & Transformation</h4>
+                                <ul class="nav-list">
+                                    <li><a href="#affinity_select_all" class="nav-item">affinity_select_all</a></li>
+                                    <li><a href="#affinity_deselect_all" class="nav-item">affinity_deselect_all</a></li>
+                                    <li><a href="#affinity_move_selection" class="nav-item">affinity_move_selection</a></li>
+                                    <li><a href="#affinity_resize_selection" class="nav-item">affinity_resize_selection</a></li>
+                                    <li><a href="#affinity_rotate_selection" class="nav-item">affinity_rotate_selection</a></li>
+                                    <li><a href="#affinity_duplicate_selection" class="nav-item">affinity_duplicate_selection</a></li>
+                                </ul>
+                            </div>
+                            <div class="nav-section">
+                                <h4 class="nav-section-title">Tool Automation</h4>
+                                <ul class="nav-list">
+                                    <li><a href="#affinity_select_tool" class="nav-item">affinity_select_tool</a></li>
+                                    <li><a href="#affinity_add_text" class="nav-item">affinity_add_text</a></li>
+                                    <li><a href="#affinity_create_shape" class="nav-item">affinity_create_shape</a></li>
+                                    <li><a href="#affinity_apply_effect" class="nav-item">affinity_apply_effect</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </nav>
+
+                <div class="api-content">
+                    <div class="api-header">
+                        <h1 class="api-title">API Reference</h1>
+                        <p class="api-description">
+                            Complete reference for all MCP tools available in the Affinity Designer server.
+                            <br><span class="description-jp">Affinity Designerサーバーで利用可能な全MCPツールの完全なリファレンス。</span>
+                        </p>
+                    </div>
+
+                    <div id="search-results" class="search-results"></div>
+
+                    <!-- Application Management -->
+                    <section class="api-section">
+                        <h2 class="section-title">Application Management</h2>
+                        <p class="section-description">Tools for managing the Affinity Designer application lifecycle.</p>
+
+                        <div id="affinity_get_status" class="api-method">
+                            <h3 class="method-name">affinity_get_status</h3>
+                            <p class="method-description">
+                                Get Affinity Designer application status and running processes.
+                                <br><span class="description-jp">Affinity Designerアプリケーションステータスと実行中プロセスを取得。</span>
+                            </p>
+                            <div class="method-details">
+                                <h4>Parameters</h4>
+                                <p class="no-params">No parameters required.</p>
+                                
+                                <h4>Response</h4>
+                                <div class="code-block">
+                                    <pre><code>{
+  "success": true,
+  "message": "Found 1 process(es), 1 with active window(s)",
+  "messageJP": "1個のプロセス、1個のアクティブウィンドウを発見",
+  "data": {
+    "totalProcesses": 1,
+    "activeWindows": 1,
+    "processes": [
+      {
+        "id": 12345,
+        "name": "AffinityDesigner",
+        "hasWindow": true,
+        "windowTitle": "Untitled Document"
+      }
+    ]
+  }
+}</code></pre>
+                                </div>
+
+                                <h4>Example Usage</h4>
+                                <div class="code-block">
+                                    <pre><code>// Ask your AI assistant:
+"Check if Affinity Designer is running"
+"Affinity Designerが実行中かチェックして"</code></pre>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="affinity_start_app" class="api-method">
+                            <h3 class="method-name">affinity_start_app</h3>
+                            <p class="method-description">
+                                Start Affinity Designer application with optional document.
+                                <br><span class="description-jp">オプションのドキュメントでAffinity Designerアプリケーションを開始。</span>
+                            </p>
+                            <div class="method-details">
+                                <h4>Parameters</h4>
+                                <div class="params-table">
+                                    <div class="param">
+                                        <span class="param-name">documentPath</span>
+                                        <span class="param-type">string</span>
+                                        <span class="param-required">optional</span>
+                                        <span class="param-description">Path to document to open</span>
+                                    </div>
+                                </div>
+
+                                <h4>Example Usage</h4>
+                                <div class="code-block">
+                                    <pre><code>// Ask your AI assistant:
+"Start Affinity Designer"
+"Open Affinity Designer with C:\\Documents\\mydesign.afdesign"</code></pre>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="affinity_focus_window" class="api-method">
+                            <h3 class="method-name">affinity_focus_window</h3>
+                            <p class="method-description">
+                                Focus the Affinity Designer window.
+                                <br><span class="description-jp">Affinity Designerウィンドウにフォーカス。</span>
+                            </p>
+                            <div class="method-details">
+                                <h4>Parameters</h4>
+                                <p class="no-params">No parameters required.</p>
+
+                                <h4>Example Usage</h4>
+                                <div class="code-block">
+                                    <pre><code>// Ask your AI assistant:
+"Focus on Affinity Designer window"
+"Affinity Designerウィンドウにフォーカスして"</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Document Operations -->
+                    <section class="api-section">
+                        <h2 class="section-title">Document Operations</h2>
+                        <p class="section-description">Tools for creating, managing, and exporting documents.</p>
+
+                        <div id="affinity_new_document" class="api-method">
+                            <h3 class="method-name">affinity_new_document</h3>
+                            <p class="method-description">
+                                Create new document in Affinity Designer.
+                                <br><span class="description-jp">Affinity Designerで新しいドキュメントを作成。</span>
+                            </p>
+                            <div class="method-details">
+                                <h4>Parameters</h4>
+                                <div class="params-table">
+                                    <div class="param">
+                                        <span class="param-name">width</span>
+                                        <span class="param-type">number</span>
+                                        <span class="param-required">optional</span>
+                                        <span class="param-description">Document width in pixels (default: 1920)</span>
+                                    </div>
+                                    <div class="param">
+                                        <span class="param-name">height</span>
+                                        <span class="param-type">number</span>
+                                        <span class="param-required">optional</span>
+                                        <span class="param-description">Document height in pixels (default: 1080)</span>
+                                    </div>
+                                    <div class="param">
+                                        <span class="param-name">units</span>
+                                        <span class="param-type">string</span>
+                                        <span class="param-required">optional</span>
+                                        <span class="param-description">Document units: px, in, cm, mm (default: px)</span>
+                                    </div>
+                                </div>
+
+                                <h4>Example Usage</h4>
+                                <div class="code-block">
+                                    <pre><code>// Ask your AI assistant:
+"Create a new 4K document"
+"Create a document that's 800x600 pixels"
+"新しい4Kドキュメントを作成して"</code></pre>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="affinity_save_document" class="api-method">
+                            <h3 class="method-name">affinity_save_document</h3>
+                            <p class="method-description">
+                                Save current document.
+                                <br><span class="description-jp">現在のドキュメントを保存。</span>
+                            </p>
+                            <div class="method-details">
+                                <h4>Parameters</h4>
+                                <div class="params-table">
+                                    <div class="param">
+                                        <span class="param-name">path</span>
+                                        <span class="param-type">string</span>
+                                        <span class="param-required">optional</span>
+                                        <span class="param-description">Save path for Save As operation</span>
+                                    </div>
+                                </div>
+
+                                <h4>Example Usage</h4>
+                                <div class="code-block">
+                                    <pre><code>// Ask your AI assistant:
+"Save the current document"
+"Save as C:\\Documents\\myproject.afdesign"</code></pre>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="affinity_export_document" class="api-method">
+                            <h3 class="method-name">affinity_export_document</h3>
+                            <p class="method-description">
+                                Export current document to various formats.
+                                <br><span class="description-jp">現在のドキュメントを様々な形式でエクスポート。</span>
+                            </p>
+                            <div class="method-details">
+                                <h4>Parameters</h4>
+                                <div class="params-table">
+                                    <div class="param">
+                                        <span class="param-name">path</span>
+                                        <span class="param-type">string</span>
+                                        <span class="param-required">optional</span>
+                                        <span class="param-description">Export file path</span>
+                                    </div>
+                                    <div class="param">
+                                        <span class="param-name">format</span>
+                                        <span class="param-type">string</span>
+                                        <span class="param-required">optional</span>
+                                        <span class="param-description">Export format: png, jpg, pdf, svg (default: png)</span>
+                                    </div>
+                                    <div class="param">
+                                        <span class="param-name">quality</span>
+                                        <span class="param-type">number</span>
+                                        <span class="param-required">optional</span>
+                                        <span class="param-description">Export quality 1-100 (default: 100)</span>
+                                    </div>
+                                </div>
+
+                                <h4>Example Usage</h4>
+                                <div class="code-block">
+                                    <pre><code>// Ask your AI assistant:
+"Export as PNG"
+"Export as high-quality JPG"
+"PDFとしてエクスポートして"</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Layer Management -->
+                    <section class="api-section">
+                        <h2 class="section-title">Layer Management</h2>
+                        <p class="section-description">Tools for managing layers in your document.</p>
+
+                        <div id="affinity_create_layer" class="api-method">
+                            <h3 class="method-name">affinity_create_layer</h3>
+                            <p class="method-description">
+                                Create new layer in current document.
+                                <br><span class="description-jp">現在のドキュメントに新しいレイヤーを作成。</span>
+                            </p>
+                            <div class="method-details">
+                                <h4>Parameters</h4>
+                                <div class="params-table">
+                                    <div class="param">
+                                        <span class="param-name">name</span>
+                                        <span class="param-type">string</span>
+                                        <span class="param-required">optional</span>
+                                        <span class="param-description">Layer name (default: "New Layer")</span>
+                                    </div>
+                                    <div class="param">
+                                        <span class="param-name">type</span>
+                                        <span class="param-type">string</span>
+                                        <span class="param-required">optional</span>
+                                        <span class="param-description">Layer type: standard, group, adjustment</span>
+                                    </div>
+                                </div>
+
+                                <h4>Example Usage</h4>
+                                <div class="code-block">
+                                    <pre><code>// Ask your AI assistant:
+"Create a new layer called 'Background'"
+"Add a new group layer"
+"バックグラウンドという名前の新しいレイヤーを作成"</code></pre>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="affinity_rename_layer" class="api-method">
+                            <h3 class="method-name">affinity_rename_layer</h3>
+                            <p class="method-description">
+                                Rename selected layer.
+                                <br><span class="description-jp">選択したレイヤーの名前を変更。</span>
+                            </p>
+                            <div class="method-details">
+                                <h4>Parameters</h4>
+                                <div class="params-table">
+                                    <div class="param">
+                                        <span class="param-name">name</span>
+                                        <span class="param-type">string</span>
+                                        <span class="param-required">required</span>
+                                        <span class="param-description">New layer name</span>
+                                    </div>
+                                </div>
+
+                                <h4>Example Usage</h4>
+                                <div class="code-block">
+                                    <pre><code>// Ask your AI assistant:
+"Rename the current layer to 'Logo'"
+"Change layer name to 'Header Text'"</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Tool Automation -->
+                    <section class="api-section">
+                        <h2 class="section-title">Tool Automation</h2>
+                        <p class="section-description">Tools for drawing, text, shapes, and effects.</p>
+
+                        <div id="affinity_select_tool" class="api-method">
+                            <h3 class="method-name">affinity_select_tool</h3>
+                            <p class="method-description">
+                                Select a specific tool in Affinity Designer.
+                                <br><span class="description-jp">Affinity Designerで特定のツールを選択。</span>
+                            </p>
+                            <div class="method-details">
+                                <h4>Parameters</h4>
+                                <div class="params-table">
+                                    <div class="param">
+                                        <span class="param-name">tool</span>
+                                        <span class="param-type">string</span>
+                                        <span class="param-required">required</span>
+                                        <span class="param-description">Tool name: select, pen, pencil, brush, rectangle, ellipse, text, zoom</span>
+                                    </div>
+                                </div>
+
+                                <h4>Example Usage</h4>
+                                <div class="code-block">
+                                    <pre><code>// Ask your AI assistant:
+"Switch to the pen tool"
+"Select the text tool"
+"ペンツールに切り替えて"</code></pre>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="affinity_add_text" class="api-method">
+                            <h3 class="method-name">affinity_add_text</h3>
+                            <p class="method-description">
+                                Add text to the document.
+                                <br><span class="description-jp">ドキュメントにテキストを追加。</span>
+                            </p>
+                            <div class="method-details">
+                                <h4>Parameters</h4>
+                                <div class="params-table">
+                                    <div class="param">
+                                        <span class="param-name">text</span>
+                                        <span class="param-type">string</span>
+                                        <span class="param-required">optional</span>
+                                        <span class="param-description">Text content (default: "Sample Text")</span>
+                                    </div>
+                                    <div class="param">
+                                        <span class="param-name">fontSize</span>
+                                        <span class="param-type">number</span>
+                                        <span class="param-required">optional</span>
+                                        <span class="param-description">Font size in points (default: 24)</span>
+                                    </div>
+                                    <div class="param">
+                                        <span class="param-name">x</span>
+                                        <span class="param-type">number</span>
+                                        <span class="param-required">optional</span>
+                                        <span class="param-description">X position (default: 100)</span>
+                                    </div>
+                                    <div class="param">
+                                        <span class="param-name">y</span>
+                                        <span class="param-type">number</span>
+                                        <span class="param-required">optional</span>
+                                        <span class="param-description">Y position (default: 100)</span>
+                                    </div>
+                                </div>
+
+                                <h4>Example Usage</h4>
+                                <div class="code-block">
+                                    <pre><code>// Ask your AI assistant:
+"Add the text 'Hello World' with font size 32"
+"Create a heading that says 'Welcome'"
+"こんにちはと書いたテキストを追加して"</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <div class="api-footer">
+                        <p>
+                            For more examples and tutorials, visit our 
+                            <a href="../examples/">Examples</a> and 
+                            <a href="../guides/">Guides</a> sections.
+                        </p>
+                        <p class="description-jp">
+                            より多くの例とチュートリアルについては、
+                            <a href="../examples/">Examples</a>と
+                            <a href="../guides/">Guides</a>セクションをご覧ください。
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="../assets/script.js"></script>
+    <script src="api-script.js"></script>
+</body>
+</html>

@@ -1,0 +1,128 @@
+# GitHub Pages Configuration for MCP Affinity Designer Server Documentation
+
+# Site settings
+title: "MCP Affinity Designer Server"
+description: "AI-powered Affinity Designer automation through Model Context Protocol"
+url: "https://szgk.github.io"
+baseurl: "/mcp-affinity-designer"
+
+# Build settings
+markdown: kramdown
+highlighter: rouge
+plugins:
+  - jekyll-feed
+  - jekyll-sitemap
+  - jekyll-seo-tag
+
+# Theme
+theme: minima
+
+# Exclude from processing
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+  - vendor/bundle/
+  - vendor/cache/
+  - vendor/gems/
+  - vendor/ruby/
+  - README.md
+  - package.json
+  - package-lock.json
+  - tsconfig.json
+
+# Include files
+include:
+  - _redirects
+
+# Collections
+collections:
+  api:
+    output: true
+    permalink: /:collection/:name/
+  examples:
+    output: true
+    permalink: /:collection/:name/
+  guides:
+    output: true
+    permalink: /:collection/:name/
+
+# Default values
+defaults:
+  - scope:
+      path: ""
+      type: "pages"
+    values:
+      layout: "default"
+  - scope:
+      path: ""
+      type: "api"
+    values:
+      layout: "api"
+  - scope:
+      path: ""
+      type: "examples"
+    values:
+      layout: "example"
+  - scope:
+      path: ""
+      type: "guides"
+    values:
+      layout: "guide"
+
+# SEO settings
+author: "szgk"
+twitter:
+  username: "@szgk"
+  card: summary_large_image
+
+# Social links
+github_username: szgk
+linkedin_username: 
+
+# Analytics (optional)
+google_analytics: 
+
+# Site verification (optional)
+google_site_verification: 
+bing_site_verification: 
+
+# Language settings
+lang: en-US
+timezone: Asia/Tokyo
+
+# Navigation
+navigation:
+  - title: "Home"
+    url: "/"
+  - title: "API Reference"
+    url: "/api/"
+  - title: "Examples"
+    url: "/examples/"
+  - title: "Guides"
+    url: "/guides/"
+  - title: "GitHub"
+    url: "https://github.com/szgk/mcp-affinity-designer"
+
+# Footer
+footer_text: "© 2025 MCP Affinity Designer Server. MIT License."
+
+# Custom settings
+features:
+  search: true
+  dark_mode: false
+  copy_code: true
+  scroll_to_top: true
+
+# Asset settings
+sass:
+  style: compressed
+  sass_dir: _sass
+
+# Compression
+compress_html:
+  clippings: all
+  comments: all
+  endings: all
+  ignore:
+    envs: development

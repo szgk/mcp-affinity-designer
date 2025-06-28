@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MCP Affinity Designer Server - Documentation</title>
+    <link rel="stylesheet" href="assets/style.css">
+    <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <h1 class="logo">
+                    <span class="logo-icon">🎨</span>
+                    MCP Affinity Designer Server
+                </h1>
+                <nav class="nav">
+                    <a href="#overview" class="nav-link">Overview</a>
+                    <a href="#installation" class="nav-link">Installation</a>
+                    <a href="api/" class="nav-link">API Reference</a>
+                    <a href="examples/" class="nav-link">Examples</a>
+                    <a href="guides/" class="nav-link">Guides</a>
+                    <a href="https://github.com/szgk/mcp-affinity-designer" class="nav-link">GitHub</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="main">
+        <section class="hero">
+            <div class="container">
+                <div class="hero-content">
+                    <h1 class="hero-title">
+                        AI-Powered Affinity Designer Automation
+                        <br>
+                        <span class="hero-subtitle-jp">AI駆動のAffinity Designer自動化</span>
+                    </h1>
+                    <p class="hero-description">
+                        A comprehensive MCP (Model Context Protocol) server that enables AI assistants to interact with Affinity Designer through automated workflows.
+                        <br>
+                        <span class="description-jp">AIアシスタントが自動化ワークフローを通してAffinity Designerと連携できるようにする包括的なMCP（Model Context Protocol）サーバーです。</span>
+                    </p>
+                    <div class="hero-actions">
+                        <a href="#installation" class="btn btn-primary">Get Started</a>
+                        <a href="api/" class="btn btn-secondary">View API</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="overview" class="section">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">Features & Capabilities</h2>
+                    <p class="section-subtitle">機能と能力</p>
+                </div>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">📄</div>
+                        <h3 class="feature-title">Document Management</h3>
+                        <p class="feature-description">
+                            Create, open, save, and export documents with customizable settings.
+                            <br><span class="description-jp">カスタマイズ可能な設定でドキュメントの作成、開く、保存、エクスポート。</span>
+                        </p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🏗️</div>
+                        <h3 class="feature-title">Layer Operations</h3>
+                        <p class="feature-description">
+                            Full layer management: create, delete, rename, and toggle visibility.
+                            <br><span class="description-jp">完全なレイヤー管理：作成、削除、名前変更、表示切り替え。</span>
+                        </p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🎯</div>
+                        <h3 class="feature-title">Object Manipulation</h3>
+                        <p class="feature-description">
+                            Select, move, resize, rotate, and duplicate objects with precision.
+                            <br><span class="description-jp">精密にオブジェクトの選択、移動、サイズ変更、回転、複製。</span>
+                        </p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🛠️</div>
+                        <h3 class="feature-title">Tool Automation</h3>
+                        <p class="feature-description">
+                            Access drawing tools, add text, create shapes, and apply effects.
+                            <br><span class="description-jp">描画ツールへのアクセス、テキスト追加、図形作成、エフェクト適用。</span>
+                        </p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🌐</div>
+                        <h3 class="feature-title">Bilingual Support</h3>
+                        <p class="feature-description">
+                            Full English and Japanese support in all operations and messages.
+                            <br><span class="description-jp">全ての操作とメッセージで完全な英語・日本語サポート。</span>
+                        </p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🏢</div>
+                        <h3 class="feature-title">Windows Platform</h3>
+                        <p class="feature-description">
+                            Optimized for Windows with PowerShell and Win32 API integration.
+                            <br><span class="description-jp">PowerShellとWin32 API統合でWindows向けに最適化。</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="installation" class="section section-alt">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">Quick Start</h2>
+                    <p class="section-subtitle">クイックスタート</p>
+                </div>
+                <div class="installation-steps">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h3 class="step-title">Install the Package</h3>
+                            <p class="step-description">パッケージをインストール</p>
+                            <div class="code-block">
+                                <code>npm install mcp-affinity-designer</code>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h3 class="step-title">Configure MCP Client</h3>
+                            <p class="step-description">MCPクライアントを設定</p>
+                            <div class="code-block">
+                                <pre><code>{
+  "mcpServers": {
+    "affinity-designer": {
+      "command": "node",
+      "args": ["./node_modules/mcp-affinity-designer/dist/index.js"]
+    }
+  }
+}</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h3 class="step-title">Start Using</h3>
+                            <p class="step-description">使用開始</p>
+                            <p>Your AI assistant can now automate Affinity Designer with 22+ available tools!</p>
+                            <p class="description-jp">AIアシスタントが22以上の利用可能ツールでAffinity Designerを自動化できるようになりました！</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">Available Tools</h2>
+                    <p class="section-subtitle">利用可能なツール</p>
+                </div>
+                <div class="tools-categories">
+                    <div class="tool-category">
+                        <h3 class="category-title">Application Management</h3>
+                        <ul class="tool-list">
+                            <li><code>affinity_get_status</code> - Check application status</li>
+                            <li><code>affinity_start_app</code> - Launch Affinity Designer</li>
+                            <li><code>affinity_focus_window</code> - Focus application window</li>
+                        </ul>
+                    </div>
+                    <div class="tool-category">
+                        <h3 class="category-title">Document Operations</h3>
+                        <ul class="tool-list">
+                            <li><code>affinity_new_document</code> - Create new documents</li>
+                            <li><code>affinity_save_document</code> - Save documents</li>
+                            <li><code>affinity_export_document</code> - Export to various formats</li>
+                            <li><code>affinity_close_document</code> - Close documents</li>
+                        </ul>
+                    </div>
+                    <div class="tool-category">
+                        <h3 class="category-title">Layer Management</h3>
+                        <ul class="tool-list">
+                            <li><code>affinity_list_layers</code> - View layers panel</li>
+                            <li><code>affinity_create_layer</code> - Create new layers</li>
+                            <li><code>affinity_delete_layer</code> - Delete selected layers</li>
+                            <li><code>affinity_rename_layer</code> - Rename layers</li>
+                        </ul>
+                    </div>
+                    <div class="tool-category">
+                        <h3 class="category-title">Object Operations</h3>
+                        <ul class="tool-list">
+                            <li><code>affinity_select_all</code> - Select all objects</li>
+                            <li><code>affinity_move_selection</code> - Move selected objects</li>
+                            <li><code>affinity_resize_selection</code> - Resize selected objects</li>
+                            <li><code>affinity_duplicate_selection</code> - Duplicate objects</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="section-actions">
+                    <a href="api/" class="btn btn-primary">View Full API Reference</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3 class="footer-title">Documentation</h3>
+                    <ul class="footer-links">
+                        <li><a href="api/">API Reference</a></li>
+                        <li><a href="examples/">Examples</a></li>
+                        <li><a href="guides/">User Guides</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3 class="footer-title">Community</h3>
+                    <ul class="footer-links">
+                        <li><a href="https://github.com/szgk/mcp-affinity-designer">GitHub Repository</a></li>
+                        <li><a href="https://github.com/szgk/mcp-affinity-designer/issues">Report Issues</a></li>
+                        <li><a href="https://github.com/szgk/mcp-affinity-designer/discussions">Discussions</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3 class="footer-title">Resources</h3>
+                    <ul class="footer-links">
+                        <li><a href="https://modelcontextprotocol.io/">MCP Protocol</a></li>
+                        <li><a href="https://affinity.serif.com/designer/">Affinity Designer</a></li>
+                        <li><a href="https://claude.ai/">Claude AI</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p class="footer-text">
+                    © 2025 MCP Affinity Designer Server. 
+                    <a href="https://github.com/szgk/mcp-affinity-designer/blob/main/LICENSE">MIT License</a>
+                </p>
+                <p class="footer-text-jp">
+                    🤖 Generated with <a href="https://claude.ai/code">Claude Code</a>
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="assets/script.js"></script>
+</body>
+</html>
