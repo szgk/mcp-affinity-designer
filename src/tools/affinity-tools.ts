@@ -587,11 +587,13 @@ export class AffinityDesignerMCPTools {
   }
 
   /**
-   * Handle new document creation
-   * 新しいドキュメント作成を処理
+   * Handle new document creation with size specification
+   * サイズ指定付きの新しいドキュメント作成を処理
    */
   private async handleNewDocument(args: Record<string, unknown>): Promise<AutomationResult> {
-    const { width = 1920, height = 1080, units = 'px' } = args;
+    const width = Number(args.width) || 1920;
+    const height = Number(args.height) || 1080;
+    const units = String(args.units) || 'px';
 
     // Ensure Affinity Designer is running / Affinity Designerが実行中であることを確認
     const status = await this.automation.getStatus();
@@ -601,32 +603,215 @@ export class AffinityDesignerMCPTools {
       if (!startResult.success) {
         return startResult;
       }
-      // Wait a moment for application to load / アプリケーションの読み込みを少し待つ
-      await this.delay(3000);
+      // Wait for application to fully load / アプリケーションが完全に読み込まれるまで待機
+      await this.delay(5000);
     }
 
-    // Focus window and send new document shortcut / ウィンドウにフォーカスして新しいドキュメントショートカットを送信
-    const focusResult = await WindowsUIAutomation.focusAffinityWindow();
-    if (!focusResult.success) {
-      return focusResult;
+    try {
+      // Step 1: Focus window with verification / ステップ1：検証付きでウィンドウにフォーカス
+      const focusResult = await this.focusWindowWithVerification();
+      if (!focusResult.success) {
+        return focusResult;
+      }
+
+      // Step 2: Open new document dialog / ステップ2：新規ドキュメントダイアログを開く
+      const dialogResult = await this.openNewDocumentDialog();
+      if (!dialogResult.success) {
+        return dialogResult;
+      }
+
+      // Step 3: Set document dimensions / ステップ3：ドキュメントの寸法を設定
+      const dimensionsResult = await this.setDocumentDimensions(width, height, units);
+      if (!dimensionsResult.success) {
+        return dimensionsResult;
+      }
+
+      // Step 4: Create the document / ステップ4：ドキュメントを作成
+      const createResult = await this.confirmDocumentCreation();
+      if (!createResult.success) {
+        return createResult;
+      }
+
+      return {
+        success: true,
+        message: `New document created successfully: ${width}x${height} ${units}`,
+        messageJP: `新しいドキュメントが正常に作成されました: ${width}x${height} ${units}`,
+        data: {
+          command: 'new_document',
+          parameters: { width, height, units },
+          created: true
+        }
+      };
+
+    } catch (error) {
+      return {
+        success: false,
+        message: `Failed to create new document: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        messageJP: `新しいドキュメントの作成に失敗: ${error instanceof Error ? error.message : '不明なエラー'}`,
+        error: String(error)
+      };
+    }
+  }
+
+  /**
+   * Focus window with retry and verification
+   * 再試行と検証付きでウィンドウにフォーカス
+   */
+  private async focusWindowWithVerification(maxAttempts = 3): Promise<AutomationResult> {
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+      const focusResult = await WindowsUIAutomation.focusAffinityWindow();
+      if (focusResult.success) {
+        // Verify focus was actually acquired / フォーカスが実際に取得されたか検証
+        await this.delay(300);
+        const verifyResult = await this.verifyWindowHasFocus();
+        if (verifyResult) {
+          return {
+            success: true,
+            message: `Window focused successfully on attempt ${attempt}`,
+            messageJP: `${attempt}回目の試行でウィンドウのフォーカスに成功`
+          };
+        }
+      }
+      
+      if (attempt < maxAttempts) {
+        await this.delay(1000 * attempt); // Progressive delay / 段階的な遅延
+      }
     }
 
-    await this.delay(500);
-    
+    return {
+      success: false,
+      message: `Failed to focus window after ${maxAttempts} attempts`,
+      messageJP: `${maxAttempts}回の試行後にウィンドウのフォーカスに失敗`
+    };
+  }
+
+  /**
+   * Verify if Affinity Designer window has focus
+   * Affinity Designerウィンドウがフォーカスを持っているか検証
+   */
+  private async verifyWindowHasFocus(): Promise<boolean> {
+    try {
+      const command = `
+        Add-Type @'
+          using System;
+          using System.Runtime.InteropServices;
+          public class Win32 {
+            [DllImport("user32.dll")]
+            public static extern IntPtr GetForegroundWindow();
+          }
+'@
+        $fg = [Win32]::GetForegroundWindow()
+        $processes = Get-Process -Name "Designer*" -ErrorAction SilentlyContinue
+        $hasFocus = $false
+        foreach ($p in $processes) {
+          if ($p.MainWindowHandle -eq $fg -and $p.MainWindowHandle -ne 0) {
+            $hasFocus = $true
+            break
+          }
+        }
+        Write-Output $hasFocus
+      `;
+      
+      const result = await WindowsUIAutomation.executeCommand(command);
+      return result.stdout.trim().toLowerCase() === 'true';
+    } catch {
+      return false;
+    }
+  }
+
+  /**
+   * Open new document dialog
+   * 新規ドキュメントダイアログを開く
+   */
+  private async openNewDocumentDialog(): Promise<AutomationResult> {
     const shortcutResult = await WindowsUIAutomation.sendKeyboardShortcut('^n');
     if (!shortcutResult.success) {
       return shortcutResult;
     }
 
+    // Wait for dialog to appear / ダイアログが表示されるまで待機
+    await this.delay(1500);
+
     return {
       success: true,
-      message: 'New document creation command sent',
-      messageJP: '新しいドキュメント作成コマンドを送信しました',
-      data: {
-        command: 'new_document',
-        parameters: { width, height, units }
-      }
+      message: 'New document dialog opened',
+      messageJP: '新規ドキュメントダイアログを開きました'
     };
+  }
+
+  /**
+   * Set document dimensions in the new document dialog
+   * 新規ドキュメントダイアログでドキュメントの寸法を設定
+   */
+  private async setDocumentDimensions(width: number, height: number, units: string): Promise<AutomationResult> {
+    try {
+      // Navigate to width field and set value / 幅フィールドに移動して値を設定
+      await this.delay(500);
+      
+      // Tab to width field (usually the first field) / 幅フィールドにタブ移動（通常は最初のフィールド）
+      await WindowsUIAutomation.sendKeyboardShortcut('{TAB}');
+      await this.delay(200);
+      await WindowsUIAutomation.sendKeyboardShortcut('{TAB}');
+      await this.delay(200);
+      
+      // Clear field and enter width / フィールドをクリアして幅を入力
+      await WindowsUIAutomation.sendKeyboardShortcut('^a');
+      await this.delay(100);
+      await WindowsUIAutomation.sendKeyboardShortcut(String(width));
+      await this.delay(300);
+
+      // Tab to height field / 高さフィールドにタブ移動
+      await WindowsUIAutomation.sendKeyboardShortcut('{TAB}');
+      await this.delay(200);
+      
+      // Clear field and enter height / フィールドをクリアして高さを入力
+      await WindowsUIAutomation.sendKeyboardShortcut('^a');
+      await this.delay(100);
+      await WindowsUIAutomation.sendKeyboardShortcut(String(height));
+      await this.delay(300);
+
+      return {
+        success: true,
+        message: `Document dimensions set to ${width}x${height} ${units}`,
+        messageJP: `ドキュメントの寸法を${width}x${height} ${units}に設定しました`
+      };
+
+    } catch (error) {
+      return {
+        success: false,
+        message: `Failed to set document dimensions: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        messageJP: `ドキュメント寸法の設定に失敗: ${error instanceof Error ? error.message : '不明なエラー'}`,
+        error: String(error)
+      };
+    }
+  }
+
+  /**
+   * Confirm document creation
+   * ドキュメント作成を確認
+   */
+  private async confirmDocumentCreation(): Promise<AutomationResult> {
+    try {
+      // Press Enter to create document / Enterキーを押してドキュメントを作成
+      await WindowsUIAutomation.sendKeyboardShortcut('{ENTER}');
+      
+      // Wait for document to be created / ドキュメントが作成されるまで待機
+      await this.delay(2000);
+
+      return {
+        success: true,
+        message: 'Document creation confirmed',
+        messageJP: 'ドキュメント作成を確認しました'
+      };
+
+    } catch (error) {
+      return {
+        success: false,
+        message: `Failed to confirm document creation: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        messageJP: `ドキュメント作成の確認に失敗: ${error instanceof Error ? error.message : '不明なエラー'}`,
+        error: String(error)
+      };
+    }
   }
 
   /**
