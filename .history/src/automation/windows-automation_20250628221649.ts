@@ -336,6 +336,7 @@ export class WindowsUIAutomation {
       const validProcesses = processes.filter(
         (p) => p.windowTitle && p.windowHandle && String(p.windowHandle) !== "0"
       );
+      console.log(validProcesses);
 
       if (validProcesses.length === 0) {
         return {

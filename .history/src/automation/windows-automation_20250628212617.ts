@@ -1,18 +1,18 @@
 /**
  * Windows Automation Module for Affinity Designer
  * Affinity Designer用Windows自動化モジュール
- *
+ * 
  * This module provides Windows-specific automation capabilities for Affinity Designer,
  * porting the proven POC scripts into production TypeScript modules.
  * このモジュールは、Affinity Designer用のWindows固有の自動化機能を提供し、
  * 実証済みのPOCスクリプトを本番TypeScriptモジュールに移植します。
  */
 
-import { spawn, exec } from "child_process";
-import { promisify } from "util";
-import * as path from "path";
-import * as fs from "fs";
-import { InstallationConfigManager } from "../config/installation-config";
+import { spawn, exec } from 'child_process';
+import { promisify } from 'util';
+import * as path from 'path';
+import * as fs from 'fs';
+import { InstallationConfigManager } from '../config/installation-config';
 
 const execAsync = promisify(exec);
 
@@ -54,7 +54,7 @@ export interface WindowInfo {
  * Affinity Designer用Windowsプロセスマネージャー
  */
 export class WindowsProcessManager {
-  private static readonly LOG_PREFIX = "[Windows Process Manager]";
+  private static readonly LOG_PREFIX = '[Windows Process Manager]';
   private static configManager = InstallationConfigManager.getInstance();
 
   /**
@@ -66,23 +66,24 @@ export class WindowsProcessManager {
       const config = this.configManager.getConfig();
       const processNames = config.processNames.join('", "');
       const command = `Get-Process -Name "${processNames}" -ErrorAction SilentlyContinue | Select-Object Id, ProcessName, MainWindowTitle, MainWindowHandle, StartTime | ConvertTo-Json`;
-
+      
       const { stdout } = await execAsync(`powershell -Command "${command}"`);
-
+      
       if (!stdout.trim()) {
         return [];
       }
-
+      
       const result = JSON.parse(stdout.trim());
       const processArray = Array.isArray(result) ? result : [result];
-
-      return processArray.map((p) => ({
+      
+      return processArray.map(p => ({
         id: p.Id,
         name: p.ProcessName,
         windowTitle: p.MainWindowTitle || undefined,
         windowHandle: p.MainWindowHandle || undefined,
-        startTime: p.StartTime ? new Date(p.StartTime) : undefined,
+        startTime: p.StartTime ? new Date(p.StartTime) : undefined
       }));
+      
     } catch (error) {
       // Silent failure for process detection / プロセス検出の静かな失敗
       return [];
@@ -107,23 +108,22 @@ export class WindowsProcessManager {
           } | ConvertTo-Json
         }
       `;
-
+      
       const { stdout } = await execAsync(`powershell -Command "${command}"`);
-
+      
       if (!stdout.trim()) {
         return null;
       }
-
+      
       const windowInfo = JSON.parse(stdout.trim());
       return {
         processId: windowInfo.ProcessId,
         processName: windowInfo.ProcessName,
         windowTitle: windowInfo.WindowTitle,
         windowHandle: windowInfo.WindowHandle,
-        startTime: windowInfo.StartTime
-          ? new Date(windowInfo.StartTime)
-          : undefined,
+        startTime: windowInfo.StartTime ? new Date(windowInfo.StartTime) : undefined
       };
+      
     } catch (error) {
       // Silent failure for window info retrieval / ウィンドウ情報取得の静かな失敗
       return null;
@@ -142,17 +142,15 @@ export class WindowsProcessManager {
    * Start Affinity Designer application
    * Affinity Designerアプリケーションを開始
    */
-  static async startApplication(
-    documentPath?: string
-  ): Promise<AutomationResult> {
+  static async startApplication(documentPath?: string): Promise<AutomationResult> {
     const installPath = this.findInstallationPath();
-
+    
     if (!installPath) {
       return {
         success: false,
-        message: "Affinity Designer installation not found",
-        messageJP: "Affinity Designerのインストールが見つかりません",
-        error: "No valid installation path found",
+        message: 'Affinity Designer installation not found',
+        messageJP: 'Affinity Designerのインストールが見つかりません',
+        error: 'No valid installation path found'
       };
     }
 
@@ -160,7 +158,7 @@ export class WindowsProcessManager {
       const args = documentPath ? [`"${documentPath}"`] : [];
       const childProcess = spawn(installPath, args, {
         detached: true,
-        stdio: "ignore",
+        stdio: 'ignore'
       });
 
       childProcess.unref();
@@ -171,20 +169,21 @@ export class WindowsProcessManager {
 
       return {
         success: true,
-        message: "Affinity Designer started successfully",
-        messageJP: "Affinity Designerの開始に成功しました",
+        message: 'Affinity Designer started successfully',
+        messageJP: 'Affinity Designerの開始に成功しました',
         data: {
           installPath,
           documentPath: documentPath || null,
-          pid: childProcess.pid,
-        },
+          pid: childProcess.pid
+        }
       };
+
     } catch (error) {
       return {
         success: false,
-        message: "Failed to start Affinity Designer",
-        messageJP: "Affinity Designerの開始に失敗しました",
-        error: error instanceof Error ? error.message : String(error),
+        message: 'Failed to start Affinity Designer',
+        messageJP: 'Affinity Designerの開始に失敗しました',
+        error: error instanceof Error ? error.message : String(error)
       };
     }
   }
@@ -195,7 +194,7 @@ export class WindowsProcessManager {
    */
   private static async waitForProcess(timeoutMs: number): Promise<void> {
     const startTime = Date.now();
-
+    
     while (Date.now() - startTime < timeoutMs) {
       const processes = await this.findAffinityProcesses();
       if (processes.length > 0) {
@@ -211,7 +210,7 @@ export class WindowsProcessManager {
    * ユーティリティ遅延関数
    */
   private static delay(ms: number): Promise<void> {
-    return new Promise((resolve) => setTimeout(resolve, ms));
+    return new Promise(resolve => setTimeout(resolve, ms));
   }
 }
 
@@ -220,7 +219,7 @@ export class WindowsProcessManager {
  * Windows UI自動化マネージャー
  */
 export class WindowsUIAutomation {
-  private static readonly LOG_PREFIX = "[Windows UI Automation]";
+  private static readonly LOG_PREFIX = '[Windows UI Automation]';
 
   /**
    * Send keyboard shortcut to active window
@@ -230,7 +229,7 @@ export class WindowsUIAutomation {
     try {
       // Escape special characters for SendKeys / SendKeys用に特殊文字をエスケープ
       const escapedKeys = this.escapeKeysForSendKeys(keys);
-
+      
       const command = `
         Add-Type -AssemblyName System.Windows.Forms
         try {
@@ -240,35 +239,34 @@ export class WindowsUIAutomation {
           Write-Output "ERROR: $($_.Exception.Message)"
         }
       `;
-
-      const result = await execAsync(
-        `powershell -NoProfile -Command "${command}"`
-      );
-
-      if (result.stdout.trim().startsWith("SUCCESS")) {
+      
+      const result = await execAsync(`powershell -NoProfile -Command "${command}"`);
+      
+      if (result.stdout.trim().startsWith('SUCCESS')) {
         // Small delay after sending keys / キー送信後の小さな遅延
         await this.delay(200);
-
+        
         return {
           success: true,
           message: `Keyboard shortcut sent successfully: ${keys}`,
           messageJP: `キーボードショートカットの送信に成功: ${keys}`,
-          data: { keys, escaped: escapedKeys },
+          data: { keys, escaped: escapedKeys }
         };
       } else {
         return {
           success: false,
           message: `PowerShell execution failed: ${result.stdout.trim()}`,
           messageJP: `PowerShell実行に失敗: ${result.stdout.trim()}`,
-          error: result.stdout.trim(),
+          error: result.stdout.trim()
         };
       }
+      
     } catch (error) {
       return {
         success: false,
         message: `Failed to send keyboard shortcut: ${keys}`,
         messageJP: `キーボードショートカットの送信に失敗: ${keys}`,
-        error: error instanceof Error ? error.message : String(error),
+        error: error instanceof Error ? error.message : String(error)
       };
     }
   }
@@ -280,14 +278,14 @@ export class WindowsUIAutomation {
   private static escapeKeysForSendKeys(keys: string): string {
     // Handle special key combinations / 特殊キーの組み合わせを処理
     return keys
-      .replace(/\+/g, "{+}")
-      .replace(/\^/g, "{^}")
-      .replace(/%/g, "{%}")
-      .replace(/~/g, "{~}")
-      .replace(/\(/g, "{(}")
-      .replace(/\)/g, "{)}")
-      .replace(/\[/g, "{[}")
-      .replace(/\]/g, "{]}");
+      .replace(/\+/g, '{+}')
+      .replace(/\^/g, '{^}')
+      .replace(/%/g, '{%}')
+      .replace(/~/g, '{~}')
+      .replace(/\(/g, '{(}')
+      .replace(/\)/g, '{)}')
+      .replace(/\[/g, '{[}')
+      .replace(/\]/g, '{]}');
   }
 
   /**
@@ -297,7 +295,7 @@ export class WindowsUIAutomation {
   static async focusAffinityWindow(maxRetries = 3): Promise<AutomationResult> {
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
       const result = await this.attemptFocusWindow(attempt);
-
+      
       if (result.success) {
         return {
           success: true,
@@ -305,22 +303,22 @@ export class WindowsUIAutomation {
           messageJP: `${attempt}回目の試行でウィンドウフォーカスに成功`,
           data: {
             ...(result.data || {}),
-            attemptsUsed: attempt,
-          },
+            attemptsUsed: attempt
+          }
         };
       }
-
+      
       // If not the last attempt, wait before retrying / 最後の試行でない場合、再試行前に待機
       if (attempt < maxRetries) {
         await this.delay(500 * attempt); // Progressive delay / 段階的遅延
       }
     }
-
+    
     return {
       success: false,
       message: `Failed to focus window after ${maxRetries} attempts`,
       messageJP: `${maxRetries}回の試行後にウィンドウフォーカスに失敗`,
-      error: "All focus attempts failed",
+      error: 'All focus attempts failed'
     };
   }
 
@@ -328,27 +326,27 @@ export class WindowsUIAutomation {
    * Single attempt to focus window with comprehensive handling
    * 包括的な処理で単一のウィンドウフォーカス試行
    */
-  private static async attemptFocusWindow(
-    attemptNumber: number
-  ): Promise<AutomationResult> {
+  private static async attemptFocusWindow(attemptNumber: number): Promise<AutomationResult> {
     try {
       const processes = await WindowsProcessManager.findAffinityProcesses();
-      const validProcesses = processes.filter(
-        (p) => p.windowTitle && p.windowHandle && String(p.windowHandle) !== "0"
+      const validProcesses = processes.filter(p => 
+        p.windowTitle && 
+        p.windowHandle && 
+        String(p.windowHandle) !== '0'
       );
-
+      
       if (validProcesses.length === 0) {
         return {
           success: false,
-          message: "No active Affinity Designer window found",
-          messageJP: "アクティブなAffinity Designerウィンドウが見つかりません",
-          error: "No valid window handle available",
+          message: 'No active Affinity Designer window found',
+          messageJP: 'アクティブなAffinity Designerウィンドウが見つかりません',
+          error: 'No valid window handle available'
         };
       }
 
       // Try the first valid process / 最初の有効なプロセスを試行
       const targetProcess = validProcesses[0];
-
+      
       const command = `
         Add-Type @'
           using System;
@@ -438,39 +436,35 @@ export class WindowsUIAutomation {
           Write-Output "FOCUS_EXCEPTION: $($_.Exception.Message)"
         }
       `;
-
-      const result = await execAsync(
-        `powershell -NoProfile -Command "${command}"`
-      );
+      
+      const result = await execAsync(`powershell -NoProfile -Command "${command}"`);
       const output = result.stdout.trim();
-
-      if (output === "SUCCESS" || output === "ALREADY_FOCUSED") {
+      
+      if (output === 'SUCCESS' || output === 'ALREADY_FOCUSED') {
         // Additional verification delay / 追加検証遅延
         await this.delay(200);
-
+        
         // Final verification with independent check / 独立チェックによる最終検証
-        const verificationResult = await this.verifyWindowFocus(
-          String(targetProcess.windowHandle)
-        );
-
+        const verificationResult = await this.verifyWindowFocus(String(targetProcess.windowHandle));
+        
         if (verificationResult) {
           return {
             success: true,
-            message: "Window focus verified successfully",
-            messageJP: "ウィンドウフォーカスの検証に成功",
-            data: {
+            message: 'Window focus verified successfully',
+            messageJP: 'ウィンドウフォーカスの検証に成功',
+            data: { 
               windowHandle: targetProcess.windowHandle,
               windowTitle: targetProcess.windowTitle,
               processId: targetProcess.id,
-              focusStatus: output,
-            },
+              focusStatus: output
+            }
           };
         } else {
           return {
             success: false,
-            message: "Focus appeared successful but verification failed",
-            messageJP: "フォーカスは成功したように見えたが検証に失敗",
-            error: "Post-focus verification failed",
+            message: 'Focus appeared successful but verification failed',
+            messageJP: 'フォーカスは成功したように見えたが検証に失敗',
+            error: 'Post-focus verification failed'
           };
         }
       } else {
@@ -478,15 +472,16 @@ export class WindowsUIAutomation {
           success: false,
           message: `Focus attempt ${attemptNumber} failed: ${output}`,
           messageJP: `フォーカス試行${attemptNumber}回目が失敗: ${output}`,
-          error: `PowerShell returned: ${output}`,
+          error: `PowerShell returned: ${output}`
         };
       }
+      
     } catch (error) {
       return {
         success: false,
         message: `Exception in focus attempt ${attemptNumber}`,
         messageJP: `フォーカス試行${attemptNumber}回目で例外発生`,
-        error: error instanceof Error ? error.message : String(error),
+        error: error instanceof Error ? error.message : String(error)
       };
     }
   }
@@ -495,9 +490,7 @@ export class WindowsUIAutomation {
    * Independent window focus verification
    * 独立したウィンドウフォーカス検証
    */
-  private static async verifyWindowFocus(
-    windowHandle: string
-  ): Promise<boolean> {
+  private static async verifyWindowFocus(windowHandle: string): Promise<boolean> {
     try {
       const command = `
         Add-Type @'
@@ -519,11 +512,9 @@ export class WindowsUIAutomation {
           Write-Output "false"
         }
       `;
-
-      const result = await execAsync(
-        `powershell -NoProfile -Command "${command}"`
-      );
-      return result.stdout.trim().toLowerCase() === "true";
+      
+      const result = await execAsync(`powershell -NoProfile -Command "${command}"`);
+      return result.stdout.trim().toLowerCase() === 'true';
     } catch {
       return false;
     }
@@ -533,23 +524,19 @@ export class WindowsUIAutomation {
    * Execute PowerShell command with improved error handling
    * 改善されたエラーハンドリングでPowerShellコマンドを実行
    */
-  static async executeCommand(
-    command: string
-  ): Promise<{ stdout: string; stderr: string; success: boolean }> {
+  static async executeCommand(command: string): Promise<{ stdout: string; stderr: string; success: boolean }> {
     try {
-      const result = await execAsync(
-        `powershell -NoProfile -Command "${command}"`
-      );
+      const result = await execAsync(`powershell -NoProfile -Command "${command}"`);
       return {
         stdout: result.stdout,
         stderr: result.stderr,
-        success: true,
+        success: true
       };
     } catch (error) {
       return {
-        stdout: "",
+        stdout: '',
         stderr: error instanceof Error ? error.message : String(error),
-        success: false,
+        success: false
       };
     }
   }
@@ -559,7 +546,7 @@ export class WindowsUIAutomation {
    * ユーティリティ遅延関数
    */
   private static delay(ms: number): Promise<void> {
-    return new Promise((resolve) => setTimeout(resolve, ms));
+    return new Promise(resolve => setTimeout(resolve, ms));
   }
 }
 
@@ -568,7 +555,7 @@ export class WindowsUIAutomation {
  * Affinity Designerドキュメント用ファイル操作マネージャー
  */
 export class FileOperationsManager {
-  private static readonly LOG_PREFIX = "[File Operations Manager]";
+  private static readonly LOG_PREFIX = '[File Operations Manager]';
   private static configManager = InstallationConfigManager.getInstance();
 
   /**
@@ -578,23 +565,23 @@ export class FileOperationsManager {
   static async discoverDocuments(): Promise<AutomationResult> {
     const documents: DocumentInfo[] = [];
     const searchPaths = this.configManager.getAccessibleDocumentPaths();
-
+    
     for (const searchPath of searchPaths) {
       try {
         if (fs.existsSync(searchPath)) {
           const files = fs.readdirSync(searchPath);
-
+          
           for (const file of files) {
-            if (file.endsWith(".afdesign")) {
+            if (file.endsWith('.afdesign')) {
               const filePath = path.join(searchPath, file);
               const stats = fs.statSync(filePath);
-
+              
               documents.push({
                 path: filePath,
                 name: file,
                 size: stats.size,
                 lastModified: stats.mtime,
-                format: "afdesign",
+                format: 'afdesign'
               });
             }
           }
@@ -603,15 +590,15 @@ export class FileOperationsManager {
         // Silent failure for inaccessible paths / アクセスできないパスの静かな失敗
       }
     }
-
+    
     return {
       success: true,
       message: `Found ${documents.length} Affinity Designer document(s)`,
       messageJP: `${documents.length}個のAffinity Designerドキュメントを発見しました`,
       data: {
         documentCount: documents.length,
-        documents: documents.slice(0, 10), // Limit to first 10 for performance
-      },
+        documents: documents.slice(0, 10) // Limit to first 10 for performance
+      }
     };
   }
 
@@ -623,38 +610,30 @@ export class FileOperationsManager {
     if (!documentPath) {
       return {
         success: false,
-        message: "Document path is required",
-        messageJP: "ドキュメントパスが必要です",
-        error: "Empty path provided",
+        message: 'Document path is required',
+        messageJP: 'ドキュメントパスが必要です',
+        error: 'Empty path provided'
       };
     }
 
     if (!fs.existsSync(documentPath)) {
       return {
         success: false,
-        message: "Document file does not exist",
-        messageJP: "ドキュメントファイルが存在しません",
-        error: "File not found",
+        message: 'Document file does not exist',
+        messageJP: 'ドキュメントファイルが存在しません',
+        error: 'File not found'
       };
     }
 
     const extension = path.extname(documentPath).toLowerCase();
-    const supportedFormats = [
-      ".afdesign",
-      ".psd",
-      ".ai",
-      ".svg",
-      ".png",
-      ".jpg",
-      ".jpeg",
-    ];
-
+    const supportedFormats = ['.afdesign', '.psd', '.ai', '.svg', '.png', '.jpg', '.jpeg'];
+    
     if (!supportedFormats.includes(extension)) {
       return {
         success: false,
         message: `Unsupported file format: ${extension}`,
         messageJP: `サポートされていないファイル形式: ${extension}`,
-        error: "Invalid file format",
+        error: 'Invalid file format'
       };
     }
 
@@ -665,8 +644,8 @@ export class FileOperationsManager {
       data: {
         path: documentPath,
         extension,
-        name: path.basename(documentPath),
-      },
+        name: path.basename(documentPath)
+      }
     };
   }
 }
@@ -676,7 +655,7 @@ export class FileOperationsManager {
  * メインWindows自動化エンジン
  */
 export class WindowsAffinityAutomation {
-  private static readonly LOG_PREFIX = "[Windows Affinity Automation]";
+  private static readonly LOG_PREFIX = '[Windows Affinity Automation]';
   private isInitialized = false;
 
   /**
@@ -690,34 +669,35 @@ export class WindowsAffinityAutomation {
       if (!installPath) {
         return {
           success: false,
-          message: "Affinity Designer installation not found",
-          messageJP: "Affinity Designerのインストールが見つかりません",
-          error: "Installation required",
+          message: 'Affinity Designer installation not found',
+          messageJP: 'Affinity Designerのインストールが見つかりません',
+          error: 'Installation required'
         };
       }
 
       // Check current process status / 現在のプロセス状態をチェック
       const processes = await WindowsProcessManager.findAffinityProcesses();
-
+      
       this.isInitialized = true;
-
+      
       return {
         success: true,
-        message: "Windows Affinity automation engine initialized",
-        messageJP: "Windows Affinity自動化エンジンを初期化しました",
+        message: 'Windows Affinity automation engine initialized',
+        messageJP: 'Windows Affinity自動化エンジンを初期化しました',
         data: {
           installPath,
           processCount: processes.length,
-          engineVersion: "1.0.0",
-          platform: "Windows",
-        },
+          engineVersion: '1.0.0',
+          platform: 'Windows'
+        }
       };
+
     } catch (error) {
       return {
         success: false,
-        message: "Failed to initialize automation engine",
-        messageJP: "自動化エンジンの初期化に失敗しました",
-        error: error instanceof Error ? error.message : String(error),
+        message: 'Failed to initialize automation engine',
+        messageJP: '自動化エンジンの初期化に失敗しました',
+        error: error instanceof Error ? error.message : String(error)
       };
     }
   }
@@ -730,15 +710,15 @@ export class WindowsAffinityAutomation {
     if (!this.isInitialized) {
       return {
         success: false,
-        message: "Automation engine not initialized",
-        messageJP: "自動化エンジンが初期化されていません",
-        error: "Engine not ready",
+        message: 'Automation engine not initialized',
+        messageJP: '自動化エンジンが初期化されていません',
+        error: 'Engine not ready'
       };
     }
 
     const processes = await WindowsProcessManager.findAffinityProcesses();
-    const activeProcesses = processes.filter((p) => p.windowTitle);
-
+    const activeProcesses = processes.filter(p => p.windowTitle);
+    
     return {
       success: true,
       message: `Found ${processes.length} process(es), ${activeProcesses.length} with active window(s)`,
@@ -747,13 +727,13 @@ export class WindowsAffinityAutomation {
         totalProcesses: processes.length,
         activeWindows: activeProcesses.length,
         isInitialized: this.isInitialized,
-        processes: processes.map((p) => ({
+        processes: processes.map(p => ({
           id: p.id,
           name: p.name,
           hasWindow: !!p.windowTitle,
-          windowTitle: p.windowTitle,
-        })),
-      },
+          windowTitle: p.windowTitle
+        }))
+      }
     };
   }
 
@@ -764,28 +744,28 @@ export class WindowsAffinityAutomation {
   getCapabilities(): AutomationResult {
     return {
       success: true,
-      message: "Windows Affinity Designer automation capabilities",
-      messageJP: "Windows Affinity Designer自動化機能",
+      message: 'Windows Affinity Designer automation capabilities',
+      messageJP: 'Windows Affinity Designer自動化機能',
       data: {
-        version: "1.0.0",
-        platform: "Windows",
+        version: '1.0.0',
+        platform: 'Windows',
         automationMethods: [
-          "keyboard_shortcuts",
-          "window_management",
-          "process_management",
-          "file_operations",
+          'keyboard_shortcuts',
+          'window_management', 
+          'process_management',
+          'file_operations'
         ],
         supportedFormats: {
-          import: ["afdesign", "psd", "ai", "svg", "png", "jpg"],
-          export: ["afdesign", "png", "jpg", "pdf", "svg", "eps"],
+          import: ['afdesign', 'psd', 'ai', 'svg', 'png', 'jpg'],
+          export: ['afdesign', 'png', 'jpg', 'pdf', 'svg', 'eps']
         },
         limitations: [
-          "No official API access",
-          "UI-dependent automation",
-          "Application must be running",
-          "Windows focus required for keyboard automation",
-        ],
-      },
+          'No official API access',
+          'UI-dependent automation',
+          'Application must be running',
+          'Windows focus required for keyboard automation'
+        ]
+      }
     };
   }
 }
